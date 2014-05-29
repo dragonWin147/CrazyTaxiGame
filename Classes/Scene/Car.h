@@ -13,6 +13,8 @@ public:
 	int typeCar; //1: BLue Car; 2: Pink ; 3 Orange; 4 Blue Truck
 	float speed;
 	bool change;
+	int land;
+	bool pass;
 public:
 	static Car* createBlueCar();
 	static Car* createBlueTruck();

@@ -15,7 +15,6 @@ MainMenu::MainMenu() {
 	readyGame = NULL;
 	layerCar = NULL;
 	firstAppearance = false;
-	lane = 0 ;
 	releaseTime = 0;
 	listCar = new CCArray();
 	initTextureRes();
@@ -66,6 +65,14 @@ bool MainMenu::init() {
 	scoreGame->setPosition(
 			ccp(visibleSize.width - scoreGame->boundingBox().size.width/2 - 10 *AppDelegate::getScaleX(),timeGame->getPositionY()));
 	this->addChild(scoreGame);
+
+	scoreLabel = CCLabelTTF::create("0","font/MarkerFelt.ttf",150);
+	scoreGame->addChild(scoreLabel);
+	scoreLabel->setPosition(ccp(scoreGame->getContentSize().width/2, scoreGame->getContentSize().height/2));
+
+	timeLabel = CCLabelTTF::create("0.00","font/MarkerFelt.ttf",70 );
+	timeGame->addChild(timeLabel);
+	timeLabel->setPosition(ccp(timeGame->getContentSize().width/2, timeGame->getContentSize().height/2));
 
 	scoreGame->setVisible(false);
 	timeGame->setVisible(false);
@@ -293,26 +300,48 @@ void MainMenu::stateReady(float dt) {
 		runGame();
 	}
 }
-
+void MainMenu::getNumberFont(){
+//	char n[10];
+//	CCTexture2D * texture = CCTextureCache::sharedTextureCache()->addImage(
+//			"FinalPNG/TT_FONTS.png");
+//	CCArray* listNumber = CCArray::create();
+//	for (int i = 0; i < 10; i++) {
+//		CCSpriteFrame * number = CCSpriteFrame::createWithTexture(texture,
+//				CCRect(16 * i, 0, 16, 20));
+//		listNumber->addObject(number);
+//	}
+//	if(number < 0)
+//		number = 0;
+//	if(number > 9)
+//		number = 9;
+//	CCSprite* spriteNumber = CCSprite::create();
+//	spriteNumber->setDisplayFrame(
+//			(CCSpriteFrame*) listNumber->objectAtIndex(number));
+}
 void MainMenu::carAppearanceRandom(float dt){
 	unschedule(schedule_selector(MainMenu::carAppearanceRandom));
 	setLaneCar();
 	int r_1 = rand()% 6;
+	CCLOG("MainMenu::carAppearanceRandom %d",r_1);
 	if (r_1 < 4) {
 		//create Car
 		int r_2 = rand() % 3;
-		if (r_2 == 1) {
+		if (r_2 == 0) {
 			//create Blue
+			CCLOG("MainMenu::carAppearanceRandom1");
 			createBlueCar();
-		} else if (r_2 == 2) {
+		} else if (r_2 == 1) {
 			//create Pink
+			CCLOG("MainMenu::carAppearanceRandom2");
 			createPinkCar();
-		} else if (r_2 == 3) {
+		} else if (r_2 == 2) {
 			//create Orange
+			CCLOG("MainMenu::carAppearanceRandom3");
 			createOrangeCar();
 		}
 	} else {
 		//create truck
+		CCLOG("MainMenu::carAppearanceRandom4");
 		createBlueTruckCar();
 	}
 	int  a = randomReleaseTime();
@@ -337,9 +366,11 @@ void MainMenu::setLaneCar(){
 		else
 			lane = 2;
 	}
+	CCLOG("MainMenu::setLaneCar() %d",lane);
 }
 
 float MainMenu::positionXCarRelease(){
+	CCLOG("MainMenu::positionXCarRelease() %d",lane);
 	if (lane == 1)
 		return visibleSize.width/3.2;
 	else if (lane == 2)
@@ -359,10 +390,11 @@ int MainMenu::randomReleaseTime(){
 	}else if( r < 8){
 		releaseTime = 3;
 	}
-	return releaseTime * miniReleaseCarTime;
+	return releaseTime * miniReleaseCarTime *CarSpeed;
 }
 
 void MainMenu::createBlueCar(){
+	CCLOG("MainMenu::createBlueCar" );
 	Car *car = Car::createBlueCar();
 	car->typeCar = 1;
 	car->speed = CarSpeed;
@@ -374,6 +406,7 @@ void MainMenu::createBlueCar(){
 }
 
 void MainMenu::createPinkCar(){
+	CCLOG("MainMenu::createPinkCar" );
 	Car *car = Car::createPinkCar();
 	car->typeCar = 2;
 	car->speed = CarSpeed;
@@ -385,6 +418,7 @@ void MainMenu::createPinkCar(){
 }
 
 void MainMenu::createOrangeCar(){
+	CCLOG("MainMenu::createOrangeCar" );
 	Car *car = Car::createOrangeCar();
 	car->typeCar = 3;
 	car->speed = CarSpeed;
@@ -396,6 +430,7 @@ void MainMenu::createOrangeCar(){
 }
 
 void MainMenu::createBlueTruckCar(){
+	CCLOG("MainMenu::createBlueTruckCar" );
 	Car *car = Car::createBlueTruck();
 	car->typeCar = 4;
 	car->speed = TruckSpeed;
@@ -408,8 +443,13 @@ void MainMenu::createBlueTruckCar(){
 
 void MainMenu::runGame() {
 	schedule(schedule_selector(MainMenu::updateGame));
+	schedule(schedule_selector(MainMenu::updateTime),1);
 	startGame = true;
 	turtleCar->runActionForward();
+}
+void MainMenu::updateTime(float dt){
+	time++;
+	timeLabel->setString(CCString::createWithFormat("%d.%d%d",time/100,(time%100)/10,time%10)->getCString());
 }
 void MainMenu::updateGame(float dt) {
 	updateBackGround();
@@ -420,7 +460,7 @@ void MainMenu::updateGame(float dt) {
 		collisionCar();
 
 		updatePosTurtle();
-		updatePositionCar(0);
+		updatePositionCar(1);
 	}
 
 }
@@ -446,6 +486,15 @@ void MainMenu::updatePositionCar(float dt){
 			car->change = true;
 			car->stopNormal();
 			car->runActionScore();
+		}
+		if((car->getPositionY() + car->boundingBox().size.height/2 )<= (turtleCar->getPositionY() - turtleCar->boundingBox().size.height/2) && !car->pass){
+			car->pass = true;
+			score++;
+			if (score > 9)
+				scoreLabel->setFontSize(110);
+			else if (score > 100)
+				scoreLabel->setFontSize(50);
+			scoreLabel->setString(CCString::createWithFormat("%d",score)->getCString());
 		}
 		if(car->getPositionY() <= -car->boundingBox().size.height/2){
 			listCar->removeObjectAtIndex(i,true);
@@ -540,15 +589,36 @@ void MainMenu::sceneReady() {
 
 void MainMenu::collisionCar(){
 	CCObject* it = NULL;
-	CCRect rectTurtle = CCRect(turtleCar->boundingBox());
+	CCRect rectTurtle = CCRect(turtleCar->boundingBox().origin.x +turtleCar->boundingBox().size.width*0.15f,
+			turtleCar->boundingBox().origin.y + turtleCar->boundingBox().size.height*0.25f,
+			turtleCar->boundingBox().size.width *0.68f ,
+			turtleCar->boundingBox().size.height * 0.57f);
+	CCRect rectCar = CCRectZero;
 	CCARRAY_FOREACH(listCar, it) {
 		Car * car = dynamic_cast<Car*>(it);
-		if (rectTurtle.intersectsRect(car->boundingBox())) {
-
-//		    if (CollisionDetection::GetInstance()->areTheSpritesColliding(turtleCar, car, true, _rt)) {
+		if(car->typeCar == 1){
+			rectCar = CCRect(car->boundingBox().origin.x + car->boundingBox().size.width*0.1  ,
+					car->boundingBox().origin.y + car->boundingBox().size.height/7
+					,car->boundingBox().size.width*0.9
+					, car->boundingBox().size.height);
+		}else if(car->typeCar == 2){
+			rectCar = CCRect(car->boundingBox().origin.x + car->boundingBox().size.width*0.1  ,
+					car->boundingBox().origin.y + car->boundingBox().size.height/7
+					,car->boundingBox().size.width*0.9
+					, car->boundingBox().size.height);
+		}else if(car->typeCar == 3){
+			rectCar = CCRect(car->boundingBox().origin.x +car->boundingBox().size.width*0.1  ,
+					car->boundingBox().origin.y + car->boundingBox().size.height/7
+					,car->boundingBox().origin.x +car->boundingBox().size.width*0.9
+					, car->boundingBox().size.height);
+		}else if(car->typeCar == 4){
+			rectCar = CCRect(car->boundingBox().origin.x + car->boundingBox().size.width*0.2  ,
+					car->boundingBox().origin.y + car->boundingBox().size.height/26
+					,car->boundingBox().size.width*0.9
+					, car->boundingBox().size.height);
+		}
+		if (rectTurtle.intersectsRect(rectCar)) {
 				gameOver();
-
-//		    }
 		}
 	}
 }
@@ -588,6 +658,7 @@ void MainMenu::handleColliSide(){
 
 void MainMenu::gameOver(){
 	unschedule(schedule_selector(MainMenu::updateGame));
+	unschedule(schedule_selector(MainMenu::updateTime));
 	unschedule(schedule_selector(MainMenu::carAppearanceRandom));
 	listCar->removeAllObjects();
 	startGame = false;
@@ -627,6 +698,9 @@ void MainMenu::initValueGame(){
 	rightMoving = false;
 	colliLeftSide = false;
 	colliRightSide = false;
+	lane = 0;
+	score = 0;
+	time = 0;
 }
 bool MainMenu::isPointer(CCNode* node, CCPoint pos) {
 	if (node != NULL) {

@@ -7,6 +7,8 @@ Car::Car() {
 	actionNormal = NULL;
 	actionScore = NULL;
 	speed = 0;
+	land = 0 ;
+	pass = false;
 }
 Car::~Car() {
 
