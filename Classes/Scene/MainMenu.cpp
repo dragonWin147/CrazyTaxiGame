@@ -17,6 +17,7 @@ MainMenu::MainMenu() {
 	firstAppearance = false;
 	releaseTime = 0;
 	listCar = new CCArray();
+	numberArr = new CCArray();
 	initTextureRes();
 }
 MainMenu::~MainMenu() {
@@ -34,68 +35,6 @@ CCScene* MainMenu::scene() {
 	return scene;
 }
 
-bool MainMenu::init() {
-	if (!CCLayer::init()) {
-		return false;
-	}
-	this->setTouchEnabled(true);
-	visibleSize = CCDirector::sharedDirector()->getVisibleSize();
-	CCPoint origin = CCDirector::sharedDirector()->getVisibleOrigin();
-
-	background_1 = CCSprite::create("FinalPNG/Country Background.png");
-	background_1->setAnchorPoint(ccp(0,0));
-	scaleNode(background_1);
-	background_1->setPosition(ccp(0,0));
-	this->addChild(background_1);
-
-	background_2 = CCSprite::create("FinalPNG/Country Background.png");
-	background_2->setAnchorPoint(ccp(0,0));
-	scaleNode(background_2);
-	background_2->setPosition(ccp(0,visibleSize.height));
-	this->addChild(background_2);
-
-	timeGame = CCSprite::create("FinalPNG/TT_Scorebadge.png");
-	scaleNode(timeGame);
-	timeGame->setPosition(
-			ccp(timeGame->boundingBox().size.width/2 + 10 *AppDelegate::getScaleX(),visibleSize.height - timeGame->boundingBox().size.height/2 - 10 *AppDelegate::getScaleY()));
-	this->addChild(timeGame);
-
-	scoreGame = CCSprite::create("FinalPNG/TT_Scorebadge.png");
-	scaleNode(scoreGame);
-	scoreGame->setPosition(
-			ccp(visibleSize.width - scoreGame->boundingBox().size.width/2 - 10 *AppDelegate::getScaleX(),timeGame->getPositionY()));
-	this->addChild(scoreGame);
-
-	scoreLabel = CCLabelTTF::create("0","font/MarkerFelt.ttf",150);
-	scoreGame->addChild(scoreLabel);
-	scoreLabel->setPosition(ccp(scoreGame->getContentSize().width/2, scoreGame->getContentSize().height/2));
-
-	timeLabel = CCLabelTTF::create("0.00","font/MarkerFelt.ttf",70 );
-	timeGame->addChild(timeLabel);
-	timeLabel->setPosition(ccp(timeGame->getContentSize().width/2, timeGame->getContentSize().height/2));
-
-	scoreGame->setVisible(false);
-	timeGame->setVisible(false);
-
-	turtleCar = TurtleCar::create(
-			"TurtleForward/Turtle Animation 1_Forward1.png");
-	turtleCar->retain();
-	scaleNode(turtleCar);
-	turtleCar->setPosition(ccp( visibleSize.width/2,turtleCar->boundingBox().size.height));
-	this->addChild(turtleCar);
-
-	initlayerControl();
-
-	layerCar = CCLayer::create();
-	layerCar->retain();
-	this->addChild(layerCar);
-
-	_rt = CCRenderTexture::create(visibleSize.width * 2, visibleSize.height * 2);
-    _rt->setPosition(ccp(visibleSize.width, visibleSize.height));
-    _rt->retain();
-    _rt->setVisible(false);
-	return true;
-}
 void MainMenu::initTextureRes(){
 	//Turtle Car
 	CCSprite::create("TurtleForward/Turtle Animation 1_Forward1.png");
@@ -170,6 +109,88 @@ void MainMenu::initTextureRes(){
 	CCSprite::create("OrangeCarScore/Orange Car_Score3.png");
 	CCSprite::create("OrangeCarScore/Orange Car_Score4.png");
 
+}
+
+bool MainMenu::init() {
+	if (!CCLayer::init()) {
+		return false;
+	}
+	this->setTouchEnabled(true);
+	initNumber();
+
+	visibleSize = CCDirector::sharedDirector()->getVisibleSize();
+	CCPoint origin = CCDirector::sharedDirector()->getVisibleOrigin();
+
+	background_1 = CCSprite::create("FinalPNG/Country Background.png");
+	background_1->setAnchorPoint(ccp(0,0));
+	scaleNode(background_1);
+	background_1->setPosition(ccp(0,0));
+	this->addChild(background_1);
+
+	background_2 = CCSprite::create("FinalPNG/Country Background.png");
+	background_2->setAnchorPoint(ccp(0,0));
+	scaleNode(background_2);
+	background_2->setPosition(ccp(0,visibleSize.height));
+	this->addChild(background_2);
+
+	timeGame = CCSprite::create("FinalPNG/TT_Scorebadge.png");
+	scaleNode(timeGame);
+	timeGame->setPosition(
+			ccp(timeGame->boundingBox().size.width/2 + 10 *AppDelegate::getScaleX(),visibleSize.height - timeGame->boundingBox().size.height/2 - 10 *AppDelegate::getScaleY()));
+	this->addChild(timeGame);
+
+	timeSprite_1 = CCSprite::create();
+	timeSprite_1->setDisplayFrame(
+			(CCSpriteFrame*) numberArr->objectAtIndex(0));
+	timeGame->addChild(timeSprite_1);
+	timeSprite_1->setPosition(ccp(timeSprite_1->getContentSize().width/2,timeGame->getContentSize().height/2));
+
+	timeSprite_2 = CCSprite::create();
+	timeSprite_2->setDisplayFrame(
+			(CCSpriteFrame*) numberArr->objectAtIndex(0));
+	timeGame->addChild(timeSprite_2);
+	timeSprite_2->setPosition(ccp(timeSprite_2->getContentSize().width,timeGame->getContentSize().height/2));
+
+	timeSprite_3 = CCSprite::create();
+	timeSprite_3->setDisplayFrame(
+			(CCSpriteFrame*) numberArr->objectAtIndex(0));
+	timeGame->addChild(timeSprite_3);
+	timeSprite_3->setPosition(ccp(timeSprite_3->getContentSize().width*3/2,timeGame->getContentSize().height/2));
+
+	timeSprite_1->setScale(0.5f);
+	timeSprite_2->setScale(0.5f);
+	timeSprite_3->setScale(0.5f);
+
+	scoreGame = CCSprite::create("FinalPNG/TT_Scorebadge.png");
+	scaleNode(scoreGame);
+	scoreGame->setPosition(
+			ccp(visibleSize.width - scoreGame->boundingBox().size.width/2 - 10 *AppDelegate::getScaleX(),timeGame->getPositionY()));
+	this->addChild(scoreGame);
+
+
+	scoreSprite = CCSprite::create();
+	scoreSprite = getNumberFont(0);
+	scoreGame->addChild(scoreSprite);
+	scoreSprite->setPosition(ccp(scoreGame->getContentSize().width/2, scoreGame->getContentSize().height/2));
+
+
+	scoreGame->setVisible(false);
+	timeGame->setVisible(false);
+
+	turtleCar = TurtleCar::create(
+			"TurtleForward/Turtle Animation 1_Forward1.png");
+	turtleCar->retain();
+	scaleNode(turtleCar);
+	turtleCar->setPosition(ccp( visibleSize.width/2,turtleCar->boundingBox().size.height));
+	this->addChild(turtleCar);
+
+	initlayerControl();
+
+	layerCar = CCLayer::create();
+	layerCar->retain();
+	this->addChild(layerCar);
+
+	return true;
 }
 void MainMenu::initlayerControl() {
 	controlGame = CCLayer::create();
@@ -251,18 +272,57 @@ void MainMenu::initLayerGameOver(){
 			ccp(visibleSize.width/2,visibleSize.height - titleGame->boundingBox().size.height/2 - 100*AppDelegate::getScaleY()));
 	layerGameOver->addChild(titleGame);
 
-	CCSprite* scoreGame = CCSprite::create("FinalPNG/TT_GameOverScoreBackground.png");
-	scaleNode(scoreGame);
-	scoreGame->setPosition(
-			ccp(visibleSize.width/2,titleGame->getPositionY() - titleGame->boundingBox().size.height/2 - scoreGame->boundingBox().size.height/2));
-	layerGameOver->addChild(scoreGame);
+	CCSprite* gameOver = CCSprite::create("FinalPNG/TT_GameOverScoreBackground.png");
+	scaleNode(gameOver);
+	gameOver->setPosition(
+			ccp(visibleSize.width/2,titleGame->getPositionY() - titleGame->boundingBox().size.height/2 - gameOver->boundingBox().size.height/2));
+	layerGameOver->addChild(gameOver);
+
+	CCSprite* scoreLabel = getNumberFont(score);
+	scoreLabel->setAnchorPoint(ccp(0,0.5f));
+	gameOver->addChild(scoreLabel);
+	scoreLabel->setPosition(
+			ccp(gameOver->getContentSize().width/2, gameOver->getContentSize().height * 0.85));
+
+	CCSprite* timeLabel_1 = getNumberFont(time/100);
+	timeLabel_1->setAnchorPoint(ccp(0,0.5));
+	gameOver->addChild(timeLabel_1);
+	timeLabel_1->setPosition(
+			ccp(scoreLabel->getPositionX(), gameOver->getContentSize().height * 0.7));
+
+	CCSprite* _c = CCSprite::create();
+	_c->setAnchorPoint(ccp(0,0.5));
+	_c->setDisplayFrame(getKey(1));
+	gameOver->addChild(_c);
+	_c->setPosition(
+			ccp(timeLabel_1->getPositionX() + timeLabel_1->getContentSize().width, timeLabel_1->getPositionY()));
+
+	CCSprite* timeLabel_2 = getNumberFont((time%100)/10);
+	timeLabel_2->setAnchorPoint(ccp(0,0.5));
+	gameOver->addChild(timeLabel_2);
+	timeLabel_2->setPosition(
+			ccp(_c->getPositionX() + _c->getContentSize().width, timeLabel_1->getPositionY()));
+
+	CCSprite* timeLabel_3 = getNumberFont(time%10);
+	gameOver->addChild(timeLabel_3);
+	timeLabel_3->setPosition(
+			ccp(timeLabel_2->getPositionX() + timeLabel_2->getContentSize().width + 10, timeLabel_1->getPositionY()));
+
+
+	int scoreData = CCUserDefault::sharedUserDefault()->getIntegerForKey("highScore",0);
+
+	CCSprite* highScore = getNumberFont(scoreData);
+	highScore->setAnchorPoint(ccp(0,0.5));
+	gameOver->addChild(highScore);
+	highScore->setPosition(
+			ccp(gameOver->getContentSize().width*2/3, gameOver->getContentSize().height * 0.45f));
 
 	CCMenuItemImage* startGame = CCMenuItemImage::create(
 			"FinalPNG/TT_StartButton_OFF.png", "FinalPNG/TT_StartButton_ON.png",
 			this, menu_selector(MainMenu::playGame));
 	scaleNode(startGame);
 	startGame->setPosition(
-			ccp(startGame->boundingBox().size.width/2 + 50*AppDelegate::getScaleX(),scoreGame->getPositionY()- scoreGame->boundingBox().size.height/2 - startGame->boundingBox().size.height/2));
+			ccp(startGame->boundingBox().size.width/2 + 50*AppDelegate::getScaleX(),gameOver->getPositionY()- gameOver->boundingBox().size.height/2 - startGame->boundingBox().size.height/2));
 
 	CCMenuItemImage* rateGame = CCMenuItemImage::create(
 			"FinalPNG/TT_RateButton_OFF.png", "FinalPNG/TT_RateButton_ON.png",
@@ -300,24 +360,77 @@ void MainMenu::stateReady(float dt) {
 		runGame();
 	}
 }
-void MainMenu::getNumberFont(){
-//	char n[10];
-//	CCTexture2D * texture = CCTextureCache::sharedTextureCache()->addImage(
-//			"FinalPNG/TT_FONTS.png");
-//	CCArray* listNumber = CCArray::create();
-//	for (int i = 0; i < 10; i++) {
-//		CCSpriteFrame * number = CCSpriteFrame::createWithTexture(texture,
-//				CCRect(16 * i, 0, 16, 20));
-//		listNumber->addObject(number);
-//	}
-//	if(number < 0)
-//		number = 0;
-//	if(number > 9)
-//		number = 9;
-//	CCSprite* spriteNumber = CCSprite::create();
-//	spriteNumber->setDisplayFrame(
-//			(CCSpriteFrame*) listNumber->objectAtIndex(number));
+CCSprite* MainMenu::getNumberFont(int number){
+	CCSprite* sprite = CCSprite::create();
+	sprite->retain();
+	if(number < 10)
+		sprite->setDisplayFrame((CCSpriteFrame*)numberArr->objectAtIndex(number));
+	else if(number < 100){
+		CCSprite* sprite_1 = CCSprite::create();
+		sprite_1->setDisplayFrame(
+				(CCSpriteFrame*) numberArr->objectAtIndex(number/10));
+		sprite->addChild(sprite_1);
+		sprite_1->setPosition(ccp(-40,sprite->getContentSize().height/2));
+
+		CCSprite* sprite_2 = CCSprite::create();
+		sprite_2->setDisplayFrame(
+				(CCSpriteFrame*) numberArr->objectAtIndex(number % 10));
+		sprite->addChild(sprite_2);
+		sprite_2->setPosition(ccp(sprite_2->getContentSize().width/2,sprite->getContentSize().height/2));
+		sprite->setScale(0.8f);
+	}else if(number < 1000){
+		CCSprite* sprite_1 = CCSprite::create();
+		sprite_1->setDisplayFrame(
+				(CCSpriteFrame*) numberArr->objectAtIndex(number/100));
+		sprite->addChild(sprite_1);
+		sprite_1->setPosition(ccp(-60,sprite->getContentSize().height/2));
+
+		CCSprite* sprite_2 = CCSprite::create();
+		sprite_2->setDisplayFrame(
+				(CCSpriteFrame*) numberArr->objectAtIndex((number%100)/10));
+		sprite->addChild(sprite_2);
+		sprite_2->setPosition(ccp(sprite_2->getContentSize().width/2 - 20,sprite->getContentSize().height/2));
+
+		CCSprite* sprite_3 = CCSprite::create();
+		sprite_3->setDisplayFrame(
+				(CCSpriteFrame*) numberArr->objectAtIndex(number % 10));
+		sprite->addChild(sprite_3);
+		sprite_3->setPosition(ccp(sprite_3->getContentSize().width,sprite->getContentSize().height/2));
+
+		sprite->setScale(0.5f);
+	}
+	return sprite;
 }
+void MainMenu::initNumber(){
+	CCTexture2D * texture = CCTextureCache::sharedTextureCache()->addImage(
+			"FinalPNG/TT_FONTS.png");
+	for(int i = 0 ; i < 10; i++){
+		CCSpriteFrame * numberFrame = CCSpriteFrame::createWithTexture(texture,
+				CCRect(130 *i, 1283, 130, 130));
+		numberArr->addObject(numberFrame);
+	}
+}
+
+CCSpriteFrame* MainMenu::getKey(int key){
+	CCTexture2D * texture = CCTextureCache::sharedTextureCache()->addImage(
+			"FinalPNG/TT_FONTS.png");
+	CCSpriteFrame * frame = NULL;
+	if(key == 1){
+		frame = CCSpriteFrame::createWithTexture(texture,
+						CCRect(22, 1486, 40, 106));
+	}else if(key == 2){
+		frame = CCSpriteFrame::createWithTexture(texture,
+						CCRect(155, 1486, 69, 106));
+	}else if(key == 3){
+		frame = CCSpriteFrame::createWithTexture(texture,
+						CCRect(362, 1554, 40, 40));
+	}else if(key == 4){
+		frame = CCSpriteFrame::createWithTexture(texture,
+						CCRect(486, 1527, 45, 25));
+	}
+	return frame;
+}
+
 void MainMenu::carAppearanceRandom(float dt){
 	unschedule(schedule_selector(MainMenu::carAppearanceRandom));
 	setLaneCar();
@@ -449,7 +562,9 @@ void MainMenu::runGame() {
 }
 void MainMenu::updateTime(float dt){
 	time++;
-	timeLabel->setString(CCString::createWithFormat("%d.%d%d",time/100,(time%100)/10,time%10)->getCString());
+	timeSprite_1->setDisplayFrame(getNumberFont(time/100)->displayFrame());
+	timeSprite_2->setDisplayFrame(getNumberFont((time%100)/10)->displayFrame());
+	timeSprite_3->setDisplayFrame(getNumberFont(time%10)->displayFrame());
 }
 void MainMenu::updateGame(float dt) {
 	updateBackGround();
@@ -465,13 +580,13 @@ void MainMenu::updateGame(float dt) {
 
 }
 void MainMenu::updateBackGround(){
-	int dif = 8;
+	int dif = 12 ;
 	background_1->setPositionY(background_1->getPositionY() - dif);
 	background_2->setPositionY(
 			background_1->getPositionY()
 					+ background_1->boundingBox().size.height - dif);
 
-	if (background_2->getPositionY() == 0) {
+	if (background_2->getPositionY() <= 0) {
 		background_1->setPositionY(0);
 	}
 }
@@ -490,11 +605,12 @@ void MainMenu::updatePositionCar(float dt){
 		if((car->getPositionY() + car->boundingBox().size.height/2 )<= (turtleCar->getPositionY() - turtleCar->boundingBox().size.height/2) && !car->pass){
 			car->pass = true;
 			score++;
-			if (score > 9)
-				scoreLabel->setFontSize(110);
-			else if (score > 100)
-				scoreLabel->setFontSize(50);
-			scoreLabel->setString(CCString::createWithFormat("%d",score)->getCString());
+			CCSprite* sprite = scoreSprite;
+			scoreSprite = getNumberFont(score);
+			scoreGame->removeChild(sprite,true);
+			scoreGame->addChild(scoreSprite);
+			scoreSprite->setPosition(ccp(scoreGame->getContentSize().width/2, scoreGame->getContentSize().height/2));
+
 		}
 		if(car->getPositionY() <= -car->boundingBox().size.height/2){
 			listCar->removeObjectAtIndex(i,true);
@@ -657,6 +773,7 @@ void MainMenu::handleColliSide(){
 }
 
 void MainMenu::gameOver(){
+	saveData();
 	unschedule(schedule_selector(MainMenu::updateGame));
 	unschedule(schedule_selector(MainMenu::updateTime));
 	unschedule(schedule_selector(MainMenu::carAppearanceRandom));
@@ -670,15 +787,19 @@ void MainMenu::gameOver(){
 		turtleCar->runAction(CCSequence::create(turtleCar->animateCrash,CCCallFunc::create(this, callfunc_selector(MainMenu::tryAgain)), NULL));
 	}
 }
-
+void MainMenu::saveData(){
+	int scoreData = CCUserDefault::sharedUserDefault()->getIntegerForKey("highScore",0);
+	if(score > scoreData)
+		CCUserDefault::sharedUserDefault()->setIntegerForKey("highScore",score);
+}
 void MainMenu::tryAgain(){
-	initValueGame();
 	background_1->setPosition(ccp(0,0));
 	background_2->setPosition(ccp(0,visibleSize.height));
 	scoreGame->setVisible(false);
 	timeGame ->setVisible(false);
 	layerCar->removeAllChildrenWithCleanup(true);
 	initLayerGameOver();
+	initValueGame();
 }
 void MainMenu::initValueGame(){
 	swipeMaxMomentum = SwipeMaxMomentum;

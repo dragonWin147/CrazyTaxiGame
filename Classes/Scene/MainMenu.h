@@ -27,8 +27,10 @@ private:
 	CCSprite* ready_3;
 	CCSprite* ready_4;
 	CCSprite* swipe_ready;
-	CCLabelTTF* scoreLabel;
-	CCLabelTTF* timeLabel;
+	CCSprite* timeSprite_1;
+	CCSprite* timeSprite_2;
+	CCSprite* timeSprite_3;
+	CCSprite* scoreSprite;
 	TurtleCar *turtleCar;
 	CCRenderTexture *_rt;
 	int swipeMaxMomentum ;
@@ -58,6 +60,7 @@ private:
 	int time;
 	int hightScore;
 	CCArray *listCar;
+	CCArray *numberArr;
 	MainMenu();
 	static MainMenu* instance;
 	~MainMenu();
@@ -94,7 +97,10 @@ public:
 	void updateScore();
 	void updateTime(float dt);
 	void setLaneCar();
-	void getNumberFont();
+	void initNumber();
+	void saveData();
+	CCSpriteFrame* getKey(int key);
+	CCSprite* getNumberFont(int number);
 	void carAppearanceRandom(float dt);
 	void updatePositionCar(float dt);
 	int randomReleaseTime();
