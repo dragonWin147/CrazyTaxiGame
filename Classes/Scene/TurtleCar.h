@@ -24,7 +24,7 @@ public:
    void stopActionForward();
    void stopActionLeft();
    void stopActionRight();
-
+	int colliPos;
 };
 
 #endif // __TurtleCar_SCENE_H__

@@ -6,6 +6,7 @@ TurtleCar::TurtleCar() {
 	actionForward = NULL;
 	actionLeft = NULL;
 	actionRight = NULL;
+	colliPos = 0;
 }
 TurtleCar::~TurtleCar() {
 
@@ -98,7 +99,7 @@ void TurtleCar::createActionCrash(){
 			"TurtleCrash/Turtle Animation 1_Crash7.png");
 	animation->addSpriteFrameWithFileName(
 			"TurtleCrash/Turtle Animation 1_Crash8.png");
-	animation->setDelayPerUnit(0.3f);
+	animation->setDelayPerUnit(0.1f);
 	animateCrash = CCAnimate::create(animation);
 }
 void TurtleCar::stopActionForward(){

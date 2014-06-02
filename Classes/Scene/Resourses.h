@@ -15,7 +15,7 @@
 #define SwipePerMomentumRandom_2 1
 #define SwipePerMomentumRandom_3 2
 #define RandomMovementsPerTime 5
-#define MiniReleaseCarTime 2
+#define MiniReleaseCarTime 1
 #define CarSpeed 2
 #define TruckSpeed 2
 #endif /* RESOURSES_H_ */

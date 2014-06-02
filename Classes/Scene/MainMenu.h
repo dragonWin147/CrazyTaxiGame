@@ -10,6 +10,7 @@
 #include "OrangeCar.h"
 #include "BlueTruckCar.h"
 #include "CollisionDetection.h"
+#include "CCDate.h"
 USING_NS_CC;
 class MainMenu: public XTLayer {
 private:
@@ -19,6 +20,7 @@ private:
 	CCSprite* timeGame;
 	CCLayer* controlGame;
 	CCLayer* layerGameOver;
+	CCLayer* layerStar;
 	CCLayer* readyGame;
 	CCLayer* layerCar;
 	CCSize visibleSize;
@@ -44,6 +46,7 @@ private:
 	int numberMovements;
 	int momentums;
 	int lane;
+	int posStarCount;
 	int releaseTime;
 	float distance;
 	bool startGame;
@@ -59,12 +62,19 @@ private:
 	int score;
 	int time;
 	int hightScore;
+	CCDate* date;
+	CCSprite* titleGameOver;
+	CCSprite* gameOverBk;
+	CCString * timeStr;
+	CCMenuItemImage* leaderGameButton;
 	CCArray *listCar;
 	CCArray *numberArr;
 	MainMenu();
 	static MainMenu* instance;
 	~MainMenu();
 public:
+	int *x_star;
+	int *y_star;
 	virtual bool init();
 
 	static CCScene* scene();
@@ -75,6 +85,7 @@ public:
 	void initlayerControl();
 	void initLayerReady();
 	void initLayerGameOver();
+	void leaderGame(CCObject* obj);
 	void sceneReady();
 	void stateReady(float dt);
 	void updateGame(float dt);
@@ -98,7 +109,12 @@ public:
 	void updateTime(float dt);
 	void setLaneCar();
 	void initNumber();
-	void saveData();
+	void saveData(int score);
+	void starAnimation(float dt);
+	void randomPosStar();
+	bool checkScoreInit(int i);
+	CCSprite *scoreData(const char* str);
+	CCBezierTo *colliCar();
 	CCSpriteFrame* getKey(int key);
 	CCSprite* getNumberFont(int number);
 	void carAppearanceRandom(float dt);
