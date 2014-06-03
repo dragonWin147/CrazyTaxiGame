@@ -74,7 +74,7 @@ public:
 	int *x_star;
 	int *y_star;
 	virtual bool init();
-
+	void onEnter();
 	static CCScene* scene();
 
 	static MainMenu* getInstance();
@@ -87,6 +87,7 @@ public:
 	void sceneReady();
 	void stateReady(float dt);
 	void updateGame(float dt);
+	void updateMusic(float dt);
 	void timerRandomMomentums(float dt);
 	void runGame();
 	void scaleNode(CCNode *node);

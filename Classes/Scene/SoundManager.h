@@ -12,15 +12,14 @@
 #include <iostream>
 #include "cocos2d.h"
 #include "cocos-ext.h"
-
+#include "SimpleAudioEngine.h"
+USING_NS_CC_EXT;
 enum eTypeSound {
 	//Game Intro
 	TT_Title,
 	TT_Button_Press,
 	// Game Start
 	TT_LightCountDownRed,
-//	TT_LightCountDownRed1,
-//	TT_LightCountDownRed2,
 	TT_LightCountDownGreen,
 
 	//Game
@@ -57,7 +56,8 @@ public:
 	virtual ~SoundManager();
 	static SoundManager* gI();
 	static SoundManager* instance;
-    void playSound(eTypeSound type);
+    void playSoundEffect(eTypeSound type);
+    void playSoundBackground(eTypeSound type);
     CC_SYNTHESIZE(bool, isEnable, IsEnable);
 };
 

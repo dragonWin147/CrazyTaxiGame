@@ -15,15 +15,18 @@ public:
 	CCAnimate *animateCrash;
 public:
 
-   // returns a pointer to new Ball instance.
-   static TurtleCar* create(const char *pszFileName);
-   void runActionForward();
-   void runActionLeft();
-   void runActionRight();
-   void createActionCrash();
-   void stopActionForward();
-   void stopActionLeft();
-   void stopActionRight();
+	// returns a pointer to new Ball instance.
+	int keySoundRun;
+	int keyAlmostScore;
+	int keyEqualScore;
+	static TurtleCar* create(const char *pszFileName);
+	void runActionForward();
+	void runActionLeft();
+	void runActionRight();
+	void createActionCrash();
+	void stopActionForward();
+	void stopActionLeft();
+	void stopActionRight();
 	int colliPos;
 };
 

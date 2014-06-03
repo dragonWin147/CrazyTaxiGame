@@ -7,7 +7,10 @@
 //
 
 #include "SoundManager.h"
-#include "SimpleAudioEngine.h"
+USING_NS_CC_EXT;
+USING_NS_CC;
+using namespace CocosDenshion;
+
 SoundManager* SoundManager::instance = NULL;
 
 SoundManager* SoundManager::gI() {
@@ -26,43 +29,49 @@ SoundManager::SoundManager() {
 }
 
 const char * listSoundName[] = {
-		"Final Sound/TT_Title.wav",
-		"Final Sound/TT_Button_Press.wav",
+		"FinalSound/TT_Title.wav",
+		"FinalSound/TT_Button_Press.wav",
 		// Game Start
-		"Final Sound/TT_LightCountDownRed.wav",
-		"Final Sound/TT_LightCountDownRed.wav",
-		"Final Sound/TT_LightCountDownRed.wav",
-		"Final Sound/TT_LightCountDownGreen.wav",
+		"FinalSound/TT_LightCountDownRed.wav",
+		"FinalSound/TT_LightCountDownGreen.wav",
 
 		//Game
-		"Final Sound/TT_Title1.wav", "Final Sound/TT_Title2.wav",
+		"FinalSound/TT_Title1.wav",
+		"FinalSound/TT_Title2.wav",
 
 		//Swipe
-		"Final Sound/TT_SwipeLeft.wav", "Final Sound/TT_SwipeRight.wav",
+		"FinalSound/TT_SwipeLeft.wav",
+		"FinalSound/TT_SwipeRight.wav",
 
 		//Crash
-		"Final Sound/TT_Crash.wav",
+		"FinalSound/TT_Crash.wav",
 		//Hover
-		"Final Sound/TT_Hover.wav",
+		"FinalSound/TT_Hover.wav",
 
 		//high score
-		"Final Sound/TT_AlmosthighScore.wav",
-		"Final Sound/TT_EqualhighScore.wav",
+		"FinalSound/TT_AlmosthighScore.wav",
+		"FinalSound/TT_EqualhighScore.wav",
 
 		//GameOver
-		"Final Sound/TT_GameOver_Music.wav", "Final Sound/TT_Button_Press.wav",
+		"FinalSound/TT_GameOver_Music.wav",
+//		"Final Sound/TT_Button_Press.wav",
 
 		//-	Leaderboard
-		"Final Sound/TT_GameOver_Music.wav", "Final Sound/TT_Button_Press.wav",
+//		"Final Sound/TT_GameOver_Music.wav",
+//		"Final Sound/TT_Button_Press.wav",
 
 };
 
-void SoundManager::playSound(eTypeSound type) {
+void SoundManager::playSoundEffect(eTypeSound type) {
 	if (isEnable)
-		CocosDenshion::SimpleAudioEngine::sharedEngine()->playEffect(
+		SimpleAudioEngine::sharedEngine()->playEffect(
 				listSoundName[type]);
 }
-
+void SoundManager::playSoundBackground(eTypeSound type) {
+	if (isEnable)
+		SimpleAudioEngine::sharedEngine()->playBackgroundMusic(
+				listSoundName[type],true);
+}
 SoundManager::~SoundManager() {
 
 }

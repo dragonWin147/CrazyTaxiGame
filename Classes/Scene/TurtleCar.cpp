@@ -1,11 +1,15 @@
 #include "TurtleCar.h"
 #include "../AppDelegate.h"
-
+#include "SoundManager.h"
+using namespace CocosDenshion;
 TurtleCar::TurtleCar() {
 	actionForward = NULL;
 	actionLeft = NULL;
 	actionRight = NULL;
 	colliPos = 0;
+	keySoundRun = 0;
+	keyEqualScore = 0 ;
+	keyAlmostScore = 0;
 }
 TurtleCar::~TurtleCar() {
 
@@ -25,6 +29,7 @@ TurtleCar* TurtleCar::create(const char * pszFileName){
 	}
 }
 void TurtleCar::runActionForward(){
+//	keySound = SimpleAudioEngine::sharedEngine()->playEffect("FinalSound/TT_Hover.wav",true);
 	if(actionForward == NULL){
 		CCAnimation* animation = CCAnimation::create();
 		animation->addSpriteFrameWithFileName("TurtleForward/Turtle Animation 1_Forward1.png");
@@ -81,6 +86,7 @@ void TurtleCar::runActionRight(){
 	turtleCar->runAction(actionRight);
 }
 void TurtleCar::createActionCrash(){
+//	SimpleAudioEngine::sharedEngine()->stopEffect(keySound);
 	CCAnimation* animation = CCAnimation::create();
 	animation->addSpriteFrameWithFileName(
 			"TurtleCrash/Turtle Animation 1_Crash1.png");

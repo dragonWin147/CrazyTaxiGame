@@ -1,5 +1,7 @@
 #include "MainMenu.h"
 #include "../AppDelegate.h"
+#include "SoundManager.h"
+using namespace CocosDenshion;
 MainMenu* MainMenu::instance = NULL;
 
 MainMenu* MainMenu::getInstance() {
@@ -121,6 +123,11 @@ bool MainMenu::init() {
 	timeStr = CCString::createWithFormat("%d/%d/%d", date->mday(), date->month(), date->year());
 	timeStr->retain();
 	return true;
+}
+
+void MainMenu::onEnter(){
+	CCLayer::onEnter();
+	SoundManager::gI()->playSoundBackground(TT_Title);
 }
 
 void MainMenu::initlayerControl() {
@@ -303,6 +310,7 @@ void MainMenu::initLayerGameOver(){
 	layerGameOver->addChild(layerStar,100);
 }
 void MainMenu::leaderGame(CCObject* obj){
+	SoundManager::gI()->playSoundEffect(TT_Button_Press);
 	if(controlGame)
 		controlGame->setVisible(false);
 
@@ -376,13 +384,20 @@ bool MainMenu::checkScoreInit(int i){
 
 }
 void MainMenu::stateReady(float dt) {
-	if (ready_1->isVisible())
+	if (ready_1->isVisible()){
+		SoundManager::gI()->playSoundEffect(TT_LightCountDownRed);
 		ready_1->setVisible(false);
-	else if (ready_2->isVisible())
+	}
+	else if (ready_2->isVisible()){
+		SoundManager::gI()->playSoundEffect(TT_LightCountDownRed);
 		ready_2->setVisible(false);
-	else if (ready_3->isVisible())
+	}
+	else if (ready_3->isVisible()){
+		SoundManager::gI()->playSoundEffect(TT_LightCountDownGreen);
 		ready_3->setVisible(false);
+	}
 	else if (ready_4->isVisible()) {
+
 		ready_4->setVisible(false);
 		swipe_ready->setVisible(false);
 		unschedule(schedule_selector(MainMenu::stateReady));
@@ -563,8 +578,10 @@ void MainMenu::createBlueTruckCar(){
 }
 
 void MainMenu::runGame() {
+	SoundManager::gI()->playSoundBackground(TT_Title2);
 	schedule(schedule_selector(MainMenu::updateGame));
 	schedule(schedule_selector(MainMenu::updateTime),1);
+	schedule(schedule_selector(MainMenu::updateMusic));
 	startGame = true;
 	turtleCar->runActionForward();
 }
@@ -586,6 +603,23 @@ void MainMenu::updateGame(float dt) {
 		updatePositionCar(1);
 	}
 
+}
+void MainMenu::updateMusic(float dt){
+	int hightScore = CCUserDefault::sharedUserDefault()->getIntegerForKey("highScore0",0);
+	if(hightScore > 0){
+		if(score == (hightScore - 1)){
+			CCLog("abc abc abc");
+			turtleCar->keyAlmostScore = SimpleAudioEngine::sharedEngine()->playEffect("FinalSound/TT_AlmosthighScore.wav");
+		}else if(score == hightScore){
+			CCLog("abc abc abc 2");
+			SimpleAudioEngine::sharedEngine()->stopEffect(turtleCar->keyAlmostScore);
+			turtleCar->keyAlmostScore = SimpleAudioEngine::sharedEngine()->playEffect("FinalSound/TT_EqualhighScore.wav");
+		}else if(score > hightScore){
+			CCLog("abc abc abc 3" );
+			SimpleAudioEngine::sharedEngine()->stopEffect(turtleCar->keyEqualScore);
+			unschedule(schedule_selector(MainMenu::updateMusic));
+		}
+	}
 }
 void MainMenu::updateBackGround(){
 	int dif = 12 ;
@@ -681,6 +715,7 @@ void MainMenu::scaleNode(CCNode * node) {
 }
 
 void MainMenu::playGame(CCObject *obj) {
+	SoundManager::gI()->playSoundEffect(TT_Button_Press);
 	initValueGame();
 	turtleCar->setVisible(false);
 	background_1->runAction(
@@ -698,6 +733,8 @@ void MainMenu::playGame(CCObject *obj) {
 }
 
 void MainMenu::sceneReady() {
+	SimpleAudioEngine::sharedEngine()->stopBackgroundMusic();
+	SoundManager::gI()->playSoundEffect(TT_LightCountDownRed);
 	if(readyGame == NULL)
 		initLayerReady();
 	else{
@@ -802,6 +839,9 @@ void MainMenu::handleColliSide(){
 
 void MainMenu::gameOver(){
 //	saveData();
+	SimpleAudioEngine::sharedEngine()->stopBackgroundMusic();
+	SoundManager::gI()->playSoundEffect(TT_Crash);
+
 	unschedule(schedule_selector(MainMenu::updateGame));
 	unschedule(schedule_selector(MainMenu::updateTime));
 	unschedule(schedule_selector(MainMenu::carAppearanceRandom));
@@ -842,6 +882,7 @@ void MainMenu::tryAgain(){
 	timeGame ->setVisible(false);
 	layerCar->removeAllChildrenWithCleanup(true);
 	initLayerGameOver();
+	SoundManager::gI()->playSoundBackground(TT_GameOver_Music);
 	saveData(score);
 	timeSprite_1->setDisplayFrame(database->getNumberFont(0)->displayFrame());
 	timeSprite_2->setDisplayFrame(database->getNumberFont(0)->displayFrame());
@@ -952,6 +993,7 @@ void MainMenu::xtSwipeGesture(XTTouchDirection direction, float distance,
 	case XTLayer::LEFT:
 		directionStr = "LEFT";
 		if (turtleCar != NULL && startGame) {
+			SoundManager::gI()->playSoundEffect(TT_SwipeRight);
 			momentums++;
 			numberMovements++;
 		}
@@ -959,6 +1001,7 @@ void MainMenu::xtSwipeGesture(XTTouchDirection direction, float distance,
 	case XTLayer::RIGHT:
 		directionStr = "RIGHT";
 		if (turtleCar != NULL && startGame) {
+			SoundManager::gI()->playSoundEffect(TT_SwipeLeft);
 			momentums--;
 			numberMovements++;
 		}
