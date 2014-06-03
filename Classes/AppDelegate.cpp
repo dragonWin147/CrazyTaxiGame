@@ -23,7 +23,6 @@ bool AppDelegate::applicationDidFinishLaunching() {
 	CCSize frameSize = pEGLView->getFrameSize();
 	AppDelegate::scaleX = frameSize.width / 1536;
 	AppDelegate::scaleY = frameSize.height / 2048;
-
 	pDirector->setOpenGLView(pEGLView);
 
 	// turn on display FPS

@@ -36,6 +36,8 @@ public:
     */
     virtual void applicationWillEnterForeground();
 
+    void initTextureRes();
+
     static float getScaleX();
 
     static float getScaleY();

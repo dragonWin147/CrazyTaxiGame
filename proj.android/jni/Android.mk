@@ -9,17 +9,12 @@ LOCAL_MODULE_FILENAME := libcocos2dcpp
 LOCAL_SRC_FILES := hellocpp/main.cpp \
                    ../../Classes/AppDelegate.cpp \
                    ../../Classes/HelloWorldScene.cpp \
+                   ../../Classes/Scene/SoundManager.cpp \
+                   ../../Classes/Scene/Database.cpp	\
                    ../../Classes/Scene/MainMenu.cpp \
                    ../../Classes/Scene/TurtleCar.cpp \
                    ../../Classes/Scene/Car.cpp \
-                   ../../Classes/Scene/BlueCar.cpp \
-                   ../../Classes/Scene/OrangeCar.cpp \
-                   ../../Classes/Scene/BlueTruckCar.cpp \
-                   ../../Classes/Scene/PinkCar.cpp \
                    ../../Classes/Scene/XTLayer.cpp \
-                   ../../Classes/Scene/CollisionDetection.cpp \
-                   ../../Classes/Scene/MapGame.cpp
-
 
 LOCAL_C_INCLUDES := $(LOCAL_PATH)/../../Classes
 

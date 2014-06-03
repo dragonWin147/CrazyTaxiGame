@@ -5,12 +5,10 @@
 #include "TurtleCar.h"
 #include "XTLayer.h"
 #include "Resourses.h"
-#include "BlueCar.h"
-#include "PinkCar.h"
-#include "OrangeCar.h"
-#include "BlueTruckCar.h"
-#include "CollisionDetection.h"
+#include "Car.h"
 #include "CCDate.h"
+#include "Database.h"
+
 USING_NS_CC;
 class MainMenu: public XTLayer {
 private:
@@ -68,7 +66,7 @@ private:
 	CCString * timeStr;
 	CCMenuItemImage* leaderGameButton;
 	CCArray *listCar;
-	CCArray *numberArr;
+	Database* database;
 	MainMenu();
 	static MainMenu* instance;
 	~MainMenu();
@@ -93,7 +91,6 @@ public:
 	void runGame();
 	void scaleNode(CCNode *node);
 	void updatePosTurtle();
-	void initTextureRes();
 	void gameOver();
 	void updateBackGround();
 	void tryAgain();
@@ -108,15 +105,15 @@ public:
 	void updateScore();
 	void updateTime(float dt);
 	void setLaneCar();
-	void initNumber();
+//	void initNumber();
 	void saveData(int score);
 	void starAnimation(float dt);
 	void randomPosStar();
 	bool checkScoreInit(int i);
-	CCSprite *scoreData(const char* str);
+//	CCSprite *scoreData(const char* str);
 	CCBezierTo *colliCar();
-	CCSpriteFrame* getKey(int key);
-	CCSprite* getNumberFont(int number);
+//	CCSpriteFrame* getKey(int key);
+//	CCSprite* getNumberFont(int number);
 	void carAppearanceRandom(float dt);
 	void updatePositionCar(float dt);
 	int randomReleaseTime();

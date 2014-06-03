@@ -18,10 +18,9 @@ MainMenu::MainMenu() {
 	firstAppearance = false;
 	releaseTime = 0;
 	listCar = new CCArray();
-	numberArr = new CCArray();
 	x_star = (int*)calloc(20,sizeof(int));
 	y_star = (int*)calloc(20,sizeof(int));
-	initTextureRes();
+
 }
 MainMenu::~MainMenu() {
 
@@ -38,82 +37,6 @@ CCScene* MainMenu::scene() {
 	return scene;
 }
 
-void MainMenu::initTextureRes(){
-	//Turtle Car
-	CCSprite::create("TurtleForward/Turtle Animation 1_Forward1.png");
-	CCSprite::create("TurtleForward/Turtle Animation 1_Forward2.png");
-	CCSprite::create("TurtleForward/Turtle Animation 1_Forward3.png");
-	CCSprite::create("TurtleForward/Turtle Animation 1_Forward4.png");
-	CCSprite::create("TurtleForward/Turtle Animation 1_Forward5.png");
-	CCSprite::create("TurtleForward/Turtle Animation 1_Forward6.png");
-	CCSprite::create("TurtleForward/Turtle Animation 1_Forward7.png");
-	CCSprite::create("TurtleForward/Turtle Animation 1_Forward8.png");
-	CCSprite::create("TurtleLeft/Turtle Animation 1_Left1.png");
-	CCSprite::create("TurtleLeft/Turtle Animation 1_Left2.png");
-	CCSprite::create("TurtleLeft/Turtle Animation 1_Left3.png");
-	CCSprite::create("TurtleLeft/Turtle Animation 1_Left4.png");
-	CCSprite::create("TurtleLeft/Turtle Animation 1_Left5.png");
-	CCSprite::create("TurtleLeft/Turtle Animation 1_Left6.png");
-	CCSprite::create("TurtleLeft/Turtle Animation 1_Left7.png");
-	CCSprite::create("TurtleLeft/Turtle Animation 1_Left8.png");
-	CCSprite::create("TurtleRight/Turtle Animation 1_Right1.png");
-	CCSprite::create("TurtleRight/Turtle Animation 1_Right2.png");
-	CCSprite::create("TurtleRight/Turtle Animation 1_Right3.png");
-	CCSprite::create("TurtleRight/Turtle Animation 1_Right4.png");
-	CCSprite::create("TurtleRight/Turtle Animation 1_Right5.png");
-	CCSprite::create("TurtleRight/Turtle Animation 1_Right6.png");
-	CCSprite::create("TurtleRight/Turtle Animation 1_Right7.png");
-	CCSprite::create("TurtleRight/Turtle Animation 1_Right8.png");
-	CCSprite::create("TurtleCrash/Turtle Animation 1_Crash1.png");
-	CCSprite::create("TurtleCrash/Turtle Animation 1_Crash2.png");
-	CCSprite::create("TurtleCrash/Turtle Animation 1_Crash3.png");
-	CCSprite::create("TurtleCrash/Turtle Animation 1_Crash4.png");
-	CCSprite::create("TurtleCrash/Turtle Animation 1_Crash5.png");
-	CCSprite::create("TurtleCrash/Turtle Animation 1_Crash6.png");
-	CCSprite::create("TurtleCrash/Turtle Animation 1_Crash7.png");
-	CCSprite::create("TurtleCrash/Turtle Animation 1_Crash8.png");
-
-	//Blue Car
-	CCSprite::create("BlueCarNormal/Blue Care Normal1.png");
-	CCSprite::create("BlueCarNormal/Blue Care Normal2.png");
-	CCSprite::create("BlueCarNormal/Blue Care Normal3.png");
-	CCSprite::create("BlueCarNormal/Blue Care Normal4.png");
-	CCSprite::create("BlueCarScore/Blue Care Score1.png");
-	CCSprite::create("BlueCarScore/Blue Care Score2.png");
-	CCSprite::create("BlueCarScore/Blue Care Score3.png");
-	CCSprite::create("BlueCarScore/Blue Care Score4.png");
-	//Pink
-	CCSprite::create("PinkCarNormal/Pink Car Normal1.png");
-	CCSprite::create("PinkCarNormal/Pink Car Normal2.png");
-	CCSprite::create("PinkCarNormal/Pink Car Normal3.png");
-	CCSprite::create("PinkCarNormal/Pink Car Normal4.png");
-	CCSprite::create("PinkCarScore/Pink Car Score1.png");
-	CCSprite::create("PinkCarScore/Pink Car Score2.png");
-	CCSprite::create("PinkCarScore/Pink Car Score3.png");
-	CCSprite::create("PinkCarScore/Pink Car Score4.png");
-	//Blue truck
-
-	CCSprite::create("BlueTruckNormal/Blue Truck Normal1.png");
-	CCSprite::create("BlueTruckNormal/Blue Truck Normal2.png");
-	CCSprite::create("BlueTruckNormal/Blue Truck Normal3.png");
-	CCSprite::create("BlueTruckNormal/Blue Truck Normal4.png");
-	CCSprite::create("BlueTruckScore/Blue Truck Score1.png");
-	CCSprite::create("BlueTruckScore/Blue Truck Score2.png");
-	CCSprite::create("BlueTruckScore/Blue Truck Score3.png");
-	CCSprite::create("BlueTruckScore/Blue Truck Score4.png");
-
-	//Orange
-	CCSprite::create("OrangeCarNormal/Orange Car_Normal1.png");
-	CCSprite::create("OrangeCarNormal/Orange Car_Normal2.png");
-	CCSprite::create("OrangeCarNormal/Orange Car_Normal3.png");
-	CCSprite::create("OrangeCarNormal/Orange Car_Normal4.png");
-	CCSprite::create("OrangeCarScore/Orange Car_Score1.png");
-	CCSprite::create("OrangeCarScore/Orange Car_Score2.png");
-	CCSprite::create("OrangeCarScore/Orange Car_Score3.png");
-	CCSprite::create("OrangeCarScore/Orange Car_Score4.png");
-
-}
-
 bool MainMenu::init() {
 	if (!CCLayer::init()) {
 		return false;
@@ -122,8 +45,9 @@ bool MainMenu::init() {
 	visibleSize = CCDirector::sharedDirector()->getVisibleSize();
 	CCPoint origin = CCDirector::sharedDirector()->getVisibleOrigin();
 
-	initNumber();
-
+//	initNumber();
+	CCLog("MainMenu::init()");
+	database = new Database();
 	randomPosStar();
 
 	background_1 = CCSprite::create("FinalPNG/Country Background.png");
@@ -145,20 +69,19 @@ bool MainMenu::init() {
 	this->addChild(timeGame);
 
 	timeSprite_1 = CCSprite::create();
-	timeSprite_1->setDisplayFrame(
-			(CCSpriteFrame*) numberArr->objectAtIndex(0));
+	timeSprite_1->setDisplayFrame(database->getNumberFont(0)->displayFrame());
 	timeGame->addChild(timeSprite_1);
 	timeSprite_1->setPosition(ccp(timeSprite_1->getContentSize().width/2,timeGame->getContentSize().height/2));
 
 	timeSprite_2 = CCSprite::create();
-	timeSprite_2->setDisplayFrame(
-			(CCSpriteFrame*) numberArr->objectAtIndex(0));
+	timeSprite_2->setDisplayFrame
+			(database->getNumberFont(0)->displayFrame());
 	timeGame->addChild(timeSprite_2);
 	timeSprite_2->setPosition(ccp(timeSprite_2->getContentSize().width,timeGame->getContentSize().height/2));
 
 	timeSprite_3 = CCSprite::create();
-	timeSprite_3->setDisplayFrame(
-			(CCSpriteFrame*) numberArr->objectAtIndex(0));
+	timeSprite_3->setDisplayFrame
+			(database->getNumberFont(0)->displayFrame());
 	timeGame->addChild(timeSprite_3);
 	timeSprite_3->setPosition(ccp(timeSprite_3->getContentSize().width*3/2,timeGame->getContentSize().height/2));
 
@@ -174,7 +97,7 @@ bool MainMenu::init() {
 
 
 	scoreSprite = CCSprite::create();
-	scoreSprite = getNumberFont(0);
+	scoreSprite = database->getNumberFont(0);
 	scoreGame->addChild(scoreSprite);
 	scoreSprite->setPosition(ccp(scoreGame->getContentSize().width/2, scoreGame->getContentSize().height/2));
 
@@ -286,13 +209,13 @@ void MainMenu::initLayerGameOver(){
 			ccp(visibleSize.width/2,titleGameOver->getPositionY() - titleGameOver->boundingBox().size.height/2 - gameOverBk->boundingBox().size.height/2));
 	layerGameOver->addChild(gameOverBk);
 
-	CCSprite* scoreLabel = getNumberFont(score);
+	CCSprite* scoreLabel = database->getNumberFont(score);
 	scoreLabel->setAnchorPoint(ccp(0,0.5f));
 	gameOverBk->addChild(scoreLabel);
 	scoreLabel->setPosition(
 			ccp(gameOverBk->getContentSize().width/2, gameOverBk->getContentSize().height * 0.85));
 
-	CCSprite* timeLabel_1 = getNumberFont(time/100);
+	CCSprite* timeLabel_1 = database->getNumberFont(time/100);
 	timeLabel_1->setAnchorPoint(ccp(0,0.5));
 	gameOverBk->addChild(timeLabel_1);
 	timeLabel_1->setPosition(
@@ -300,18 +223,18 @@ void MainMenu::initLayerGameOver(){
 
 	CCSprite* _c = CCSprite::create();
 	_c->setAnchorPoint(ccp(0,0.5));
-	_c->setDisplayFrame(getKey(1));
+	_c->setDisplayFrame(database->getKey(1));
 	gameOverBk->addChild(_c);
 	_c->setPosition(
 			ccp(timeLabel_1->getPositionX() + timeLabel_1->getContentSize().width, timeLabel_1->getPositionY()));
 
-	CCSprite* timeLabel_2 = getNumberFont((time%100)/10);
+	CCSprite* timeLabel_2 = database->getNumberFont((time%100)/10);
 	timeLabel_2->setAnchorPoint(ccp(0,0.5));
 	gameOverBk->addChild(timeLabel_2);
 	timeLabel_2->setPosition(
 			ccp(_c->getPositionX() + _c->getContentSize().width, timeLabel_1->getPositionY()));
 
-	CCSprite* timeLabel_3 = getNumberFont(time%10);
+	CCSprite* timeLabel_3 = database->getNumberFont(time%10);
 	gameOverBk->addChild(timeLabel_3);
 	timeLabel_3->setPosition(
 			ccp(timeLabel_2->getPositionX() + timeLabel_2->getContentSize().width + 10, timeLabel_1->getPositionY()));
@@ -319,7 +242,7 @@ void MainMenu::initLayerGameOver(){
 
 	int scoreData = CCUserDefault::sharedUserDefault()->getIntegerForKey("highScore0",0);
 
-	CCSprite* highScore = getNumberFont(scoreData);
+	CCSprite* highScore = database->getNumberFont(scoreData);
 	highScore->setAnchorPoint(ccp(0,0.5));
 	gameOverBk->addChild(highScore);
 	highScore->setPosition(
@@ -327,7 +250,7 @@ void MainMenu::initLayerGameOver(){
 
 	int scoreOfDay = CCUserDefault::sharedUserDefault()->getIntegerForKey(timeStr->getCString(),0);
 
-	CCSprite* highScoreOfDay = getNumberFont(scoreOfDay);
+	CCSprite* highScoreOfDay = database->getNumberFont(scoreOfDay);
 	highScoreOfDay->setAnchorPoint(ccp(0,0.5));
 	gameOverBk->addChild(highScoreOfDay);
 	highScoreOfDay->setPosition(
@@ -374,6 +297,10 @@ void MainMenu::initLayerGameOver(){
 	pMenu->setPosition(CCPointZero);
 	layerGameOver->addChild(pMenu, 1);
 	this->addChild(layerGameOver);
+
+	layerStar = CCLayer::create();
+	layerStar->retain();
+	layerGameOver->addChild(layerStar,100);
 }
 void MainMenu::leaderGame(CCObject* obj){
 	if(controlGame)
@@ -383,8 +310,10 @@ void MainMenu::leaderGame(CCObject* obj){
 		initLayerGameOver();
 	}
 
-	if(layerStar)
-		layerStar->setVisible(false);
+	if(layerStar){
+		CCLOG("layerStar false");
+		layerStar->removeAllChildrenWithCleanup(true);
+	}
 	titleGameOver->setTexture(CCSprite::create("FinalPNG/TT_LeaderTitle.png")->getTexture());
 	titleGameOver->setTextureRect(CCSprite::create("FinalPNG/TT_LeaderTitle.png")->getTextureRect());
 
@@ -395,77 +324,17 @@ void MainMenu::leaderGame(CCObject* obj){
 
 	for(int i = 0 ; i <8 ; i++){
 		CCString* str = CCString::createWithFormat("%s%d", "highScore", i);
-		CCSprite* sprite = scoreData(str->getCString());
+		CCSprite* sprite = database->drawScore(str->getCString());
 		gameOverBk->addChild(sprite);
 		sprite->setAnchorPoint(ccp(0,0.5f));
 		sprite->setPosition(ccp(gameOverBk->getContentSize().width * 0.44f,gameOverBk->getContentSize().height*0.87f -
 				gameOverBk->getContentSize().height*0.085f * i));
 	}
 }
-CCSprite* MainMenu::scoreData(const char * str){
-	CCSprite *sprite = CCSprite::create();
-	int _score = CCUserDefault::sharedUserDefault()->getIntegerForKey(
-			str, 0);
-	if (_score > 0) {
-		CCString* str_day = CCString::createWithFormat("%s%s", str, "day");
-		CCString* str_month = CCString::createWithFormat("%s%s",str, "month");
-		CCString* str_year = CCString::createWithFormat("%s%s", str, "year");
-		int _day = CCUserDefault::sharedUserDefault()->getIntegerForKey(str_day->getCString(), 0);
-		int _month = CCUserDefault::sharedUserDefault()->getIntegerForKey(str_month->getCString(),
-				0);
-		int _year = CCUserDefault::sharedUserDefault()->getIntegerForKey(str_year->getCString(),
-				0);
-		CCSprite* sprite_1 = getNumberFont(_score);
-		CCSprite* sprite_2 = getNumberFont(_day);
-		CCSprite* sprite_3 = CCSprite::create();
-		sprite_3->setDisplayFrame(getKey(2));
-		CCSprite* sprite_4 = getNumberFont(_month);
-		CCSprite* sprite_5 = CCSprite::create();
-		sprite_5->setDisplayFrame(getKey(2));
-		CCSprite* sprite_6 = getNumberFont(_year/1000);
-		CCSprite* sprite_7 = getNumberFont((_year/100)%10);
-		CCSprite* sprite_8 = getNumberFont((_year/10)%10);
-		CCSprite* sprite_9 = getNumberFont(_year%10);
-		sprite->addChild(sprite_1);
-		sprite->addChild(sprite_2);
-		sprite->addChild(sprite_3);
-		sprite->addChild(sprite_4);
-		sprite->addChild(sprite_5);
-		sprite->addChild(sprite_6);
-		sprite->addChild(sprite_7);
-		sprite->addChild(sprite_8);
-		sprite->addChild(sprite_9);
-		sprite_1->setAnchorPoint(ccp(0,0.5f));
-		sprite_2->setAnchorPoint(ccp(0,0.5f));
-		sprite_3->setAnchorPoint(ccp(0,0.5f));
-		sprite_4->setAnchorPoint(ccp(0,0.5f));
-		sprite_5->setAnchorPoint(ccp(0,0.5f));
-		sprite_6->setAnchorPoint(ccp(0,0.5f));
-		sprite_7->setAnchorPoint(ccp(0,0.5f));
-		sprite_8->setAnchorPoint(ccp(0,0.5f));
-		sprite_9->setAnchorPoint(ccp(0,0.5f));
-
-		sprite_1->setPosition(ccp(0,sprite->getContentSize().height/2));
-		sprite_2->setPosition(ccp(sprite_1->getContentSize().width*2,sprite->getContentSize().height/2));
-		sprite_3->setPosition(ccp(sprite_2->getPositionX() + sprite_2->getContentSize().width,sprite->getContentSize().height/2));
-		sprite_4->setPosition(ccp(sprite_3->getPositionX() + sprite_3->getContentSize().width,sprite->getContentSize().height/2));
-		sprite_5->setPosition(ccp(sprite_4->getPositionX() + sprite_4->getContentSize().width,sprite->getContentSize().height/2));
-		sprite_6->setPosition(ccp(sprite_5->getPositionX() + sprite_5->getContentSize().width,sprite->getContentSize().height/2));
-		sprite_7->setPosition(ccp(sprite_6->getPositionX() + sprite_6->getContentSize().width,sprite->getContentSize().height/2));
-		sprite_8->setPosition(ccp(sprite_7->getPositionX() + sprite_7->getContentSize().width,sprite->getContentSize().height/2));
-		sprite_9->setPosition(ccp(sprite_8->getPositionX() + sprite_8->getContentSize().width,sprite->getContentSize().height/2));
-	}else{
-		sprite->setDisplayFrame(getKey(4));
-	}
-	sprite->setScale(0.5f);
-	return sprite ;
-}
 
 void MainMenu::saveData(int score){
 	int scoreData = CCUserDefault::sharedUserDefault()->getIntegerForKey("highScore0",0);
 	int scoreOfDay = CCUserDefault::sharedUserDefault()->getIntegerForKey(timeStr->getCString(),0);
-//	if(score > scoreData)
-//		CCUserDefault::sharedUserDefault()->setIntegerForKey("highScore",score);
 	if(score > scoreOfDay)
 		CCUserDefault::sharedUserDefault()->setIntegerForKey(timeStr->getCString(),score);
 
@@ -475,7 +344,6 @@ void MainMenu::saveData(int score){
 		_score = CCUserDefault::sharedUserDefault()->getIntegerForKey(
 				str->getCString(), 0);
 		if (score > _score) {
-//			if(checkScoreInit(i+1)||_score == 0){
 				CCString* str_day = CCString::createWithFormat("%s%s", str->getCString(), "day");
 				CCString* str_month = CCString::createWithFormat("%s%s", str->getCString(), "month");
 				CCString* str_year = CCString::createWithFormat("%s%s", str->getCString(), "year");
@@ -490,7 +358,6 @@ void MainMenu::saveData(int score){
 				if(_score > 0 )
 					saveData(_score);
 				break;
-//			}
 		}
 	}
 
@@ -556,8 +423,6 @@ void MainMenu::randomPosStar(){
 	}
 }
 void MainMenu::starAnimation(float dt){
-	layerStar = CCLayer::create();
-	layerStar->retain();
 	if(posStarCount >= 14){
 		unschedule(schedule_selector(MainMenu::starAnimation));
 		randomPosStar();
@@ -567,82 +432,11 @@ void MainMenu::starAnimation(float dt){
 	int end_Y = y_star[posStarCount];
 	star->setScale(AppDelegate::getMinScale());
 	star->setPosition(ccp(begin_X,visibleSize.height + star->boundingBox().size.width));
-	layerStar->addChild(star,100);
+	layerStar->addChild(star);
 	CCMoveTo* move = CCMoveTo::create(2,ccp(star->getPositionX(), end_Y));
     CCActionInterval* move_ease = CCEaseBackInOut::create((CCActionInterval*)(move->copy()->autorelease()) );
 	star->runAction(move_ease);
-	layerGameOver->addChild(layerStar,100);
 	posStarCount ++;
-}
-CCSprite* MainMenu::getNumberFont(int number){
-	CCSprite* sprite = CCSprite::create();
-	sprite->retain();
-	if(number < 10)
-		sprite->setDisplayFrame((CCSpriteFrame*)numberArr->objectAtIndex(number));
-	else if(number < 100){
-		CCSprite* sprite_1 = CCSprite::create();
-		sprite_1->setDisplayFrame(
-				(CCSpriteFrame*) numberArr->objectAtIndex(number/10));
-		sprite->addChild(sprite_1);
-		sprite_1->setPosition(ccp(-40,sprite->getContentSize().height/2));
-
-		CCSprite* sprite_2 = CCSprite::create();
-		sprite_2->setDisplayFrame(
-				(CCSpriteFrame*) numberArr->objectAtIndex(number % 10));
-		sprite->addChild(sprite_2);
-		sprite_2->setPosition(ccp(sprite_2->getContentSize().width/2,sprite->getContentSize().height/2));
-		sprite->setScale(0.8f);
-	}else if(number < 1000){
-		CCSprite* sprite_1 = CCSprite::create();
-		sprite_1->setDisplayFrame(
-				(CCSpriteFrame*) numberArr->objectAtIndex(number/100));
-		sprite->addChild(sprite_1);
-		sprite_1->setPosition(ccp(-60,sprite->getContentSize().height/2));
-
-		CCSprite* sprite_2 = CCSprite::create();
-		sprite_2->setDisplayFrame(
-				(CCSpriteFrame*) numberArr->objectAtIndex((number%100)/10));
-		sprite->addChild(sprite_2);
-		sprite_2->setPosition(ccp(sprite_2->getContentSize().width/2 - 20,sprite->getContentSize().height/2));
-
-		CCSprite* sprite_3 = CCSprite::create();
-		sprite_3->setDisplayFrame(
-				(CCSpriteFrame*) numberArr->objectAtIndex(number % 10));
-		sprite->addChild(sprite_3);
-		sprite_3->setPosition(ccp(sprite_3->getContentSize().width,sprite->getContentSize().height/2));
-
-		sprite->setScale(0.5f);
-	}
-	return sprite;
-}
-void MainMenu::initNumber(){
-	CCTexture2D * texture = CCTextureCache::sharedTextureCache()->addImage(
-			"FinalPNG/TT_FONTS.png");
-	for(int i = 0 ; i < 10; i++){
-		CCSpriteFrame * numberFrame = CCSpriteFrame::createWithTexture(texture,
-				CCRect(130 *i, 1283, 130, 130));
-		numberArr->addObject(numberFrame);
-	}
-}
-
-CCSpriteFrame* MainMenu::getKey(int key){
-	CCTexture2D * texture = CCTextureCache::sharedTextureCache()->addImage(
-			"FinalPNG/TT_FONTS.png");
-	CCSpriteFrame * frame = NULL;
-	if(key == 1){
-		frame = CCSpriteFrame::createWithTexture(texture,
-						CCRect(22, 1486, 40, 106));
-	}else if(key == 2){
-		frame = CCSpriteFrame::createWithTexture(texture,
-						CCRect(155, 1486, 69, 106));
-	}else if(key == 3){
-		frame = CCSpriteFrame::createWithTexture(texture,
-						CCRect(362, 1554, 40, 40));
-	}else if(key == 4){
-		frame = CCSpriteFrame::createWithTexture(texture,
-						CCRect(486, 1527, 45, 25));
-	}
-	return frame;
 }
 
 void MainMenu::carAppearanceRandom(float dt){
@@ -776,9 +570,9 @@ void MainMenu::runGame() {
 }
 void MainMenu::updateTime(float dt){
 	time++;
-	timeSprite_1->setDisplayFrame(getNumberFont(time/100)->displayFrame());
-	timeSprite_2->setDisplayFrame(getNumberFont((time%100)/10)->displayFrame());
-	timeSprite_3->setDisplayFrame(getNumberFont(time%10)->displayFrame());
+	timeSprite_1->setDisplayFrame(database->getNumberFont(time/100)->displayFrame());
+	timeSprite_2->setDisplayFrame(database->getNumberFont((time%100)/10)->displayFrame());
+	timeSprite_3->setDisplayFrame(database->getNumberFont(time%10)->displayFrame());
 }
 void MainMenu::updateGame(float dt) {
 	updateBackGround();
@@ -820,7 +614,7 @@ void MainMenu::updatePositionCar(float dt){
 			car->pass = true;
 			score++;
 			CCSprite* sprite = scoreSprite;
-			scoreSprite = getNumberFont(score);
+			scoreSprite = database->getNumberFont(score);
 			scoreGame->removeChild(sprite,true);
 			scoreGame->addChild(scoreSprite);
 			scoreSprite->setPosition(ccp(scoreGame->getContentSize().width/2, scoreGame->getContentSize().height/2));
@@ -1049,11 +843,11 @@ void MainMenu::tryAgain(){
 	layerCar->removeAllChildrenWithCleanup(true);
 	initLayerGameOver();
 	saveData(score);
-	timeSprite_1->setDisplayFrame(getNumberFont(0)->displayFrame());
-	timeSprite_2->setDisplayFrame(getNumberFont(0)->displayFrame());
-	timeSprite_3->setDisplayFrame(getNumberFont(0)->displayFrame());
+	timeSprite_1->setDisplayFrame(database->getNumberFont(0)->displayFrame());
+	timeSprite_2->setDisplayFrame(database->getNumberFont(0)->displayFrame());
+	timeSprite_3->setDisplayFrame(database->getNumberFont(0)->displayFrame());
 	CCSprite* sprite = scoreSprite;
-	scoreSprite = getNumberFont(0);
+	scoreSprite = database->getNumberFont(0);
 	scoreGame->removeChild(sprite,true);
 	scoreGame->addChild(scoreSprite);
 	scoreSprite->setPosition(ccp(scoreGame->getContentSize().width/2, scoreGame->getContentSize().height/2));

@@ -1,5 +1,4 @@
 #include "TurtleCar.h"
-#include "MapGame.h"
 #include "../AppDelegate.h"
 
 TurtleCar::TurtleCar() {
