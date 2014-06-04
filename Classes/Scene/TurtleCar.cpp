@@ -3,11 +3,13 @@
 #include "SoundManager.h"
 using namespace CocosDenshion;
 TurtleCar::TurtleCar() {
+	animateCrash = NULL;
+	actionHover = NULL;
 	actionForward = NULL;
 	actionLeft = NULL;
 	actionRight = NULL;
 	colliPos = 0;
-	keySoundRun = 0;
+	keySoundHover = 0;
 	keyEqualScore = 0 ;
 	keyAlmostScore = 0;
 }
@@ -107,19 +109,52 @@ void TurtleCar::createActionCrash(){
 	animation->setDelayPerUnit(0.1f);
 	animateCrash = CCAnimate::create(animation);
 }
-void TurtleCar::stopActionForward(){
-	if(actionForward)
-	turtleCar->stopAction(actionForward);
+
+void TurtleCar::runActionHoverMode(){
+	keySoundHover = SimpleAudioEngine::sharedEngine()->playEffect("FinalSound/TT_Hover.wav");
+	if(actionHover == NULL){
+		CCAnimation* animation = CCAnimation::create();
+		animation->addSpriteFrameWithFileName("TurtleHover/Turtle Animation 1_Hover1.png");
+		animation->addSpriteFrameWithFileName("TurtleHover/Turtle Animation 1_Hover2.png");
+		animation->addSpriteFrameWithFileName("TurtleHover/Turtle Animation 1_Hover3.png");
+		animation->addSpriteFrameWithFileName("TurtleHover/Turtle Animation 1_Hover4.png");
+		animation->addSpriteFrameWithFileName("TurtleHover/Turtle Animation 1_Hover5.png");
+		animation->addSpriteFrameWithFileName("TurtleHover/Turtle Animation 1_Hover6.png");
+		animation->addSpriteFrameWithFileName("TurtleHover/Turtle Animation 1_Hover7.png");
+		animation->addSpriteFrameWithFileName("TurtleHover/Turtle Animation 1_Hover8.png");
+		animation->setDelayPerUnit(0.1f);
+		CCAnimate *animate = CCAnimate::create(animation);
+		actionHover = CCRepeatForever::create(animate);
+		actionHover->retain();
+	}
+	turtleCar->runAction(actionHover);
+}
+void TurtleCar::runActionFlash(){
+	turtleCar->runAction(
+			CCRepeat::create(
+					CCSequence::create(CCFadeOut::create(0.1f),
+							CCDelayTime::create(0.1f), CCFadeIn::create(0.1f),
+							NULL), 15));
+}
+void TurtleCar::stopActionHoverMode() {
+	SimpleAudioEngine::sharedEngine()->stopEffect(keySoundHover);
+	if (actionHover)
+		turtleCar->stopAction(actionHover);
 }
 
-void TurtleCar::stopActionLeft(){
-	if(actionLeft)
-	turtleCar->stopAction(actionLeft);
+void TurtleCar::stopActionForward() {
+	if (actionForward)
+		turtleCar->stopAction(actionForward);
 }
 
-void TurtleCar::stopActionRight(){
-	if(actionRight)
-	turtleCar->stopAction(actionRight);
+void TurtleCar::stopActionLeft() {
+	if (actionLeft)
+		turtleCar->stopAction(actionLeft);
+}
+
+void TurtleCar::stopActionRight() {
+	if (actionRight)
+		turtleCar->stopAction(actionRight);
 }
 
 

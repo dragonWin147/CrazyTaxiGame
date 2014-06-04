@@ -11,12 +11,13 @@ private:
 	CCAction* actionForward;
 	CCAction* actionLeft;
 	CCAction* actionRight;
+	CCAction* actionHover;
 public:
 	CCAnimate *animateCrash;
 public:
 
 	// returns a pointer to new Ball instance.
-	int keySoundRun;
+	int keySoundHover;
 	int keyAlmostScore;
 	int keyEqualScore;
 	static TurtleCar* create(const char *pszFileName);
@@ -27,6 +28,9 @@ public:
 	void stopActionForward();
 	void stopActionLeft();
 	void stopActionRight();
+	void runActionHoverMode();
+	void stopActionHoverMode();
+	void runActionFlash();
 	int colliPos;
 };
 

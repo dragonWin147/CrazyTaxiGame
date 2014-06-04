@@ -22,7 +22,6 @@ MainMenu::MainMenu() {
 	listCar = new CCArray();
 	x_star = (int*)calloc(20,sizeof(int));
 	y_star = (int*)calloc(20,sizeof(int));
-
 }
 MainMenu::~MainMenu() {
 
@@ -112,7 +111,7 @@ bool MainMenu::init() {
 	turtleCar->retain();
 	scaleNode(turtleCar);
 	turtleCar->setPosition(ccp( visibleSize.width/2,turtleCar->boundingBox().size.height));
-	this->addChild(turtleCar);
+	this->addChild(turtleCar,1000);
 
 	initlayerControl();
 	layerCar = CCLayer::create();
@@ -579,11 +578,14 @@ void MainMenu::createBlueTruckCar(){
 
 void MainMenu::runGame() {
 	SoundManager::gI()->playSoundBackground(TT_Title2);
+	startGame = true;
+	turtleCar->runActionForward();
+	turtleCar->keyAlmostScore = 0;
+	turtleCar->keyEqualScore = 0;
 	schedule(schedule_selector(MainMenu::updateGame));
 	schedule(schedule_selector(MainMenu::updateTime),1);
 	schedule(schedule_selector(MainMenu::updateMusic));
-	startGame = true;
-	turtleCar->runActionForward();
+	randomModeHover();
 }
 void MainMenu::updateTime(float dt){
 	time++;
@@ -597,32 +599,50 @@ void MainMenu::updateGame(float dt) {
 		// collision Side
 		collisionSideOfRoad();
 		//collision Car
-		collisionCar();
+		if(!modeHover)
+			collisionCar();
 
 		updatePosTurtle();
 		updatePositionCar(1);
+		if(time == timeHover && !modeHover){
+			SoundManager::gI()->playSoundEffect(TT_Hover);
+			modeHover = true;
+			turtleCar->runActionHoverMode();
+			scheduleOnce(schedule_selector(MainMenu::sche_timeModeHover),10);
+		}
 	}
 
 }
+void MainMenu::sche_timeModeHover(float dt){
+	turtleCar->stopActionHoverMode();
+	scheduleOnce(schedule_selector(MainMenu::sche_timeModeFlash),5);
+	turtleCar->runActionFlash();
+}
+
+void MainMenu::sche_timeModeFlash(float dt){
+	timeHover = 0;
+	randomModeHover();
+	modeHover = false;
+}
+
 void MainMenu::updateMusic(float dt){
 	int hightScore = CCUserDefault::sharedUserDefault()->getIntegerForKey("highScore0",0);
 	if(hightScore > 0){
-		if(score == (hightScore - 1)){
-			CCLog("abc abc abc");
-			turtleCar->keyAlmostScore = SimpleAudioEngine::sharedEngine()->playEffect("FinalSound/TT_AlmosthighScore.wav");
-		}else if(score == hightScore){
-			CCLog("abc abc abc 2");
+		if(score == (hightScore - 1) && turtleCar->keyAlmostScore == 0){
+			turtleCar->keyAlmostScore = SimpleAudioEngine::sharedEngine()->playEffect("FinalSound/TT_AlmostHighScore.wav");
+		}else if(score == hightScore && turtleCar->keyEqualScore == 0){
 			SimpleAudioEngine::sharedEngine()->stopEffect(turtleCar->keyAlmostScore);
-			turtleCar->keyAlmostScore = SimpleAudioEngine::sharedEngine()->playEffect("FinalSound/TT_EqualhighScore.wav");
-		}else if(score > hightScore){
-			CCLog("abc abc abc 3" );
+			turtleCar->keyAlmostScore = 0;
+			turtleCar->keyEqualScore = SimpleAudioEngine::sharedEngine()->playEffect("FinalSound/TT_EqualHighScore.wav");
+		}else if(score > hightScore ){
 			SimpleAudioEngine::sharedEngine()->stopEffect(turtleCar->keyEqualScore);
+			turtleCar->keyEqualScore = 0;
 			unschedule(schedule_selector(MainMenu::updateMusic));
 		}
 	}
 }
 void MainMenu::updateBackGround(){
-	int dif = 12 ;
+	int dif = Backgroundscrollspeed * AppDelegate::getScaleY() ;
 	background_1->setPositionY(background_1->getPositionY() - dif);
 	background_2->setPositionY(
 			background_1->getPositionY()
@@ -662,43 +682,45 @@ void MainMenu::updatePositionCar(float dt){
 }
 
 void MainMenu::updatePosTurtle(){
-	if (momentums < 0 && !leftMoving) {
-		turtleCar->stopAllActions();
-		leftMoving = true;
-		rightMoving = false;
-		turtleCar->runActionLeft();
-	} else if (momentums > 0 && !rightMoving) {
-		turtleCar->stopAllActions();
-		rightMoving = true;
-		leftMoving = false;
-		turtleCar->runActionRight();
-	} else if (momentums == 0) {
-		if (leftMoving)
-			turtleCar->stopActionLeft();
-		if (rightMoving)
-			turtleCar->stopActionRight();
-		if (leftMoving || rightMoving)
-			turtleCar->runActionForward();
-		leftMoving = false;
-		rightMoving = false;
-	}
-	// random momentums
-	if (numberMovements > 0
-			&& (numberMovements % moveChangesPerRandom == 0) && !randomMomentums) {
-		randomMomentums = true;
-		int ran = rand() % 3;
-		if (ran == 0) {
-			stepSperMomentum = stepSperMomentum * swipePerMomentumRandom_1;
-		} else if (ran == 1) {
-			stepSperMomentum = stepSperMomentum * swipePerMomentumRandom_2;
-		} else if (ran == 2) {
-			stepSperMomentum = stepSperMomentum * swipePerMomentumRandom_3;
+	if(!modeHover){
+		if (momentums < 0 && !leftMoving) {
+			turtleCar->stopAllActions();
+			leftMoving = true;
+			rightMoving = false;
+			turtleCar->runActionLeft();
+		} else if (momentums > 0 && !rightMoving) {
+			turtleCar->stopAllActions();
+			rightMoving = true;
+			leftMoving = false;
+			turtleCar->runActionRight();
+		} else if (momentums == 0) {
+			if (leftMoving)
+				turtleCar->stopActionLeft();
+			if (rightMoving)
+				turtleCar->stopActionRight();
+			if (leftMoving || rightMoving)
+				turtleCar->runActionForward();
+			leftMoving = false;
+			rightMoving = false;
 		}
-		scheduleOnce(schedule_selector(MainMenu::timerRandomMomentums),5);
+		// random momentums
+		if (numberMovements > 0
+				&& (numberMovements % moveChangesPerRandom == 0) && !randomMomentums) {
+			randomMomentums = true;
+			int ran = rand() % 3;
+			if (ran == 0) {
+				stepSperMomentum = stepSperMomentum * swipePerMomentumRandom_1;
+			} else if (ran == 1) {
+				stepSperMomentum = stepSperMomentum * swipePerMomentumRandom_2;
+			} else if (ran == 2) {
+				stepSperMomentum = stepSperMomentum * swipePerMomentumRandom_3;
+			}
+			scheduleOnce(schedule_selector(MainMenu::timerRandomMomentums),5);
+		}
+		turtleCar->setPositionX(
+				turtleCar->getPositionX()
+						+ momentums * distance * stepSperMomentum /30);
 	}
-	turtleCar->setPositionX(
-			turtleCar->getPositionX()
-					+ momentums * distance * stepSperMomentum /30);
 }
 void MainMenu::timerRandomMomentums(float dt){
 	stepSperMomentum = StepSperMomentum;
@@ -712,6 +734,11 @@ void MainMenu::scaleNode(CCNode * node) {
 		node->setScaleY(AppDelegate::getScaleY());
 	}
 
+}
+
+void MainMenu::randomModeHover(){
+	int rand = arc4random()%7 + 4;
+	timeHover = rand * Hovertimemultiplier;
 }
 
 void MainMenu::playGame(CCObject *obj) {
@@ -838,13 +865,13 @@ void MainMenu::handleColliSide(){
 }
 
 void MainMenu::gameOver(){
-//	saveData();
 	SimpleAudioEngine::sharedEngine()->stopBackgroundMusic();
 	SoundManager::gI()->playSoundEffect(TT_Crash);
 
 	unschedule(schedule_selector(MainMenu::updateGame));
 	unschedule(schedule_selector(MainMenu::updateTime));
 	unschedule(schedule_selector(MainMenu::carAppearanceRandom));
+	unschedule(schedule_selector(MainMenu::updateMusic));
 	listCar->removeAllObjects();
 	startGame = false;
 	turtleCar->stopAllActions();
@@ -915,6 +942,8 @@ void MainMenu::initValueGame(){
 	score = 0;
 	time = 0;
 	posStarCount = 0;
+	timeHover = 0;
+	modeHover = false;
 }
 bool MainMenu::isPointer(CCNode* node, CCPoint pos) {
 	if (node != NULL) {
@@ -992,7 +1021,7 @@ void MainMenu::xtSwipeGesture(XTTouchDirection direction, float distance,
 		break;
 	case XTLayer::LEFT:
 		directionStr = "LEFT";
-		if (turtleCar != NULL && startGame) {
+		if (turtleCar != NULL && startGame && !modeHover) {
 			SoundManager::gI()->playSoundEffect(TT_SwipeRight);
 			momentums++;
 			numberMovements++;
@@ -1000,7 +1029,7 @@ void MainMenu::xtSwipeGesture(XTTouchDirection direction, float distance,
 		break;
 	case XTLayer::RIGHT:
 		directionStr = "RIGHT";
-		if (turtleCar != NULL && startGame) {
+		if (turtleCar != NULL && startGame && !modeHover) {
 			SoundManager::gI()->playSoundEffect(TT_SwipeLeft);
 			momentums--;
 			numberMovements++;

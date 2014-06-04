@@ -49,8 +49,8 @@ const char * listSoundName[] = {
 		"FinalSound/TT_Hover.wav",
 
 		//high score
-		"FinalSound/TT_AlmosthighScore.wav",
-		"FinalSound/TT_EqualhighScore.wav",
+		"FinalSound/TT_AlmostHighScore.wav",
+		"FinalSound/TT_EqualHighScore.wav",
 
 		//GameOver
 		"FinalSound/TT_GameOver_Music.wav",

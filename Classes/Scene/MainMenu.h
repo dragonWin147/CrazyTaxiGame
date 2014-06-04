@@ -43,6 +43,7 @@ private:
 	int randomMovementsPerTime ;
 	int numberMovements;
 	int momentums;
+	int timeHover;
 	int lane;
 	int posStarCount;
 	int releaseTime;
@@ -57,6 +58,7 @@ private:
 	bool leftRoad;
 	bool centerRoad;
 	bool rightRoad;
+	bool modeHover;
 	int score;
 	int time;
 	int hightScore;
@@ -106,15 +108,14 @@ public:
 	void updateScore();
 	void updateTime(float dt);
 	void setLaneCar();
-//	void initNumber();
+	void randomModeHover();
 	void saveData(int score);
 	void starAnimation(float dt);
 	void randomPosStar();
 	bool checkScoreInit(int i);
-//	CCSprite *scoreData(const char* str);
+	void sche_timeModeHover(float dt);
+	void sche_timeModeFlash(float dt);
 	CCBezierTo *colliCar();
-//	CCSpriteFrame* getKey(int key);
-//	CCSprite* getNumberFont(int number);
 	void carAppearanceRandom(float dt);
 	void updatePositionCar(float dt);
 	int randomReleaseTime();
