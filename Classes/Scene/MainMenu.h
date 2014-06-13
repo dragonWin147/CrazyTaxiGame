@@ -8,7 +8,7 @@
 #include "Car.h"
 #include "CCDate.h"
 #include "Database.h"
-
+#include "../NDKHelper/NDKHelper.h"
 USING_NS_CC;
 class MainMenu: public XTLayer {
 private:
@@ -47,6 +47,7 @@ private:
 	int lane;
 	int posStarCount;
 	int releaseTime;
+	int backgroundscrollspeed;
 	float distance;
 	bool startGame;
 	bool leftMoving;
@@ -62,6 +63,7 @@ private:
 	int score;
 	int time;
 	int hightScore;
+	int numberGames;
 	CCDate* date;
 	CCSprite* titleGameOver;
 	CCSprite* gameOverBk;
@@ -115,6 +117,17 @@ public:
 	bool checkScoreInit(int i);
 	void sche_timeModeHover(float dt);
 	void sche_timeModeFlash(float dt);
+	void postScoreFaceBook(CCObject* obj);
+	void postScoreFaceBookSuccess();
+	void postScoreTwitter(CCObject* obj);
+	void postScoreTwitterSuccess();
+	void likeFaceBook();
+	void likeFaceBookSuccess();
+	void showAdvertisementTop(float dt);
+	void showAdvertisementCenter(float dt);
+	void hideAds(float dt);
+	void showAdsSuccess();
+	void hideAdsSuccess();
 	CCBezierTo *colliCar();
 	void carAppearanceRandom(float dt);
 	void updatePositionCar(float dt);

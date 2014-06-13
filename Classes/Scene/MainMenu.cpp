@@ -1,7 +1,11 @@
 #include "MainMenu.h"
+#include <iostream>
+#include "stdio.h"
+#include "stdlib.h"
 #include "../AppDelegate.h"
 #include "SoundManager.h"
 using namespace CocosDenshion;
+using namespace std;
 MainMenu* MainMenu::instance = NULL;
 
 MainMenu* MainMenu::getInstance() {
@@ -22,6 +26,8 @@ MainMenu::MainMenu() {
 	listCar = new CCArray();
 	x_star = (int*)calloc(20,sizeof(int));
 	y_star = (int*)calloc(20,sizeof(int));
+	numberGames = 0;
+
 }
 MainMenu::~MainMenu() {
 
@@ -109,7 +115,9 @@ bool MainMenu::init() {
 	turtleCar = TurtleCar::create(
 			"TurtleForward/Turtle Animation 1_Forward1.png");
 	turtleCar->retain();
-	scaleNode(turtleCar);
+//	scaleNode(turtleCar);
+	turtleCar->setScaleX(AppDelegate::getScaleX()*1.2f);
+	turtleCar->setScaleY(AppDelegate::getScaleY()*1.2f);
 	turtleCar->setPosition(ccp( visibleSize.width/2,turtleCar->boundingBox().size.height));
 	this->addChild(turtleCar,1000);
 
@@ -127,6 +135,21 @@ bool MainMenu::init() {
 void MainMenu::onEnter(){
 	CCLayer::onEnter();
 	SoundManager::gI()->playSoundBackground(TT_Title);
+
+	NDKHelper::AddSelector("Selectors", "postScoreFaceBookSuccess",
+	callfuncND_selector(MainMenu::postScoreFaceBookSuccess), this);
+
+	NDKHelper::AddSelector("Selectors", "postScoreTwitterSuccess",
+	callfuncND_selector(MainMenu::postScoreTwitterSuccess), this);
+
+	NDKHelper::AddSelector("Selectors", "likeFaceBookSuccess",
+	callfuncND_selector(MainMenu::likeFaceBookSuccess), this);
+
+	NDKHelper::AddSelector("Selectors", "showAdsSuccess",
+	callfuncND_selector(MainMenu::showAdsSuccess), this);
+
+	NDKHelper::AddSelector("Selectors", "hideAdsSuccess",
+	callfuncND_selector(MainMenu::hideAdsSuccess), this);
 }
 
 void MainMenu::initlayerControl() {
@@ -219,7 +242,7 @@ void MainMenu::initLayerGameOver(){
 	scoreLabel->setAnchorPoint(ccp(0,0.5f));
 	gameOverBk->addChild(scoreLabel);
 	scoreLabel->setPosition(
-			ccp(gameOverBk->getContentSize().width/2, gameOverBk->getContentSize().height * 0.85));
+			ccp(gameOverBk->getContentSize().width/2 , gameOverBk->getContentSize().height * 0.85));
 
 	CCSprite* timeLabel_1 = database->getNumberFont(time/100);
 	timeLabel_1->setAnchorPoint(ccp(0,0.5));
@@ -252,7 +275,7 @@ void MainMenu::initLayerGameOver(){
 	highScore->setAnchorPoint(ccp(0,0.5));
 	gameOverBk->addChild(highScore);
 	highScore->setPosition(
-			ccp(gameOverBk->getContentSize().width*2/3, gameOverBk->getContentSize().height * 0.45f));
+			ccp(gameOverBk->getContentSize().width*2/3 , gameOverBk->getContentSize().height * 0.45f));
 
 	int scoreOfDay = CCUserDefault::sharedUserDefault()->getIntegerForKey(timeStr->getCString(),0);
 
@@ -260,7 +283,7 @@ void MainMenu::initLayerGameOver(){
 	highScoreOfDay->setAnchorPoint(ccp(0,0.5));
 	gameOverBk->addChild(highScoreOfDay);
 	highScoreOfDay->setPosition(
-			ccp(gameOverBk->getContentSize().width*2/3, gameOverBk->getContentSize().height * 0.28));
+			ccp(highScore->getPositionX(), gameOverBk->getContentSize().height * 0.28));
 	if(score >= scoreOfDay*0.8f && score < scoreOfDay) {
 		CCSprite* almost = CCSprite::create("FinalPNG/TT_AlmostBadge.png");
 		almost->setAnchorPoint(ccp(0,0));
@@ -337,6 +360,80 @@ void MainMenu::leaderGame(CCObject* obj){
 		sprite->setPosition(ccp(gameOverBk->getContentSize().width * 0.44f,gameOverBk->getContentSize().height*0.87f -
 				gameOverBk->getContentSize().height*0.085f * i));
 	}
+
+	CCMenuItemImage* faceBook = CCMenuItemImage::create(
+			"FinalPNG/Facebook.png", "FinalPNG/Facebook.png",
+			this, menu_selector(MainMenu::postScoreFaceBook));
+	scaleNode(faceBook);
+	faceBook->setPosition(
+			ccp(faceBook->boundingBox().size.width/2 + visibleSize.width/2
+					,gameOverBk->getPositionY()- gameOverBk->boundingBox().size.height/2 - faceBook->boundingBox().size.height/2 - 20*AppDelegate::getScaleY()));
+
+	CCMenuItemImage* twitter = CCMenuItemImage::create(
+			"FinalPNG/Twitter_logo_blue.png", "FinalPNG/Twitter_logo_blue.png",
+			this, menu_selector(MainMenu::postScoreTwitter));
+	scaleNode(twitter);
+	twitter->setPosition(
+			ccp(twitter->boundingBox().size.width *2/3 + visibleSize.width/2 + faceBook->boundingBox().size.width
+					,faceBook->getPositionY()));
+
+	CCMenu* pMenu = CCMenu::create(faceBook, twitter, NULL);
+	pMenu->setPosition(CCPointZero);
+	layerGameOver->addChild(pMenu, 1);
+}
+
+void MainMenu::postScoreFaceBook(CCObject* obj){
+	CCDictionary *dic = CCDictionary::create();
+	dic->setObject(CCString::createWithFormat("%d", score), "score");
+	SendMessageWithParams(string("postScoreFaceBook"), dic);
+}
+
+void MainMenu::postScoreTwitter(CCObject* obj){
+	CCDictionary *dic = CCDictionary::create();
+	dic->setObject(CCString::createWithFormat("%d",score),"score");
+	SendMessageWithParams(string("postScoreTwitter"),dic);
+}
+
+void MainMenu::likeFaceBook(){
+	SendMessageWithParams(string("likeFaceBook"), NULL);
+}
+
+void MainMenu::showAdvertisementTop(float dt){
+	if(time % 6 == 0 ){
+		SendMessageWithParams(string("showAdsTop"),NULL);
+	}
+}
+
+void MainMenu::showAdvertisementCenter(float dt){
+	if(numberGames % 6 == 2 || numberGames % 6 == 4){
+		CCLog("showAdvertisementCenter %d",numberGames);
+		SendMessageWithParams(string("showAdsCenter"),NULL);
+	}
+}
+void MainMenu::hideAds(float dt){
+	SendMessageWithParams(string("hideAds"),NULL);
+}
+void MainMenu::postScoreFaceBookSuccess(){
+	CCLog("postScoreFaceBookSuccess");
+}
+
+void MainMenu::postScoreTwitterSuccess(){
+	CCLog("postScoreTwitterSuccess");
+}
+
+void MainMenu::likeFaceBookSuccess(){
+	CCLog("likeFaceBookSuccess");
+}
+
+void MainMenu::showAdsSuccess(){
+	if(startGame){
+		scheduleOnce(schedule_selector(MainMenu::hideAds),3);
+		CCLog("showAdsSuccess");
+	}
+}
+
+void MainMenu::hideAdsSuccess(){
+	CCLog("hideAdsSuccess");
 }
 
 void MainMenu::saveData(int score){
@@ -577,6 +674,7 @@ void MainMenu::createBlueTruckCar(){
 }
 
 void MainMenu::runGame() {
+	numberGames++;
 	SoundManager::gI()->playSoundBackground(TT_Title2);
 	startGame = true;
 	turtleCar->runActionForward();
@@ -585,6 +683,7 @@ void MainMenu::runGame() {
 	schedule(schedule_selector(MainMenu::updateGame));
 	schedule(schedule_selector(MainMenu::updateTime),1);
 	schedule(schedule_selector(MainMenu::updateMusic));
+	schedule(schedule_selector(MainMenu::showAdvertisementTop),1);
 	randomModeHover();
 }
 void MainMenu::updateTime(float dt){
@@ -613,6 +712,8 @@ void MainMenu::updateGame(float dt) {
 	}
 
 }
+
+
 void MainMenu::sche_timeModeHover(float dt){
 	turtleCar->stopActionHoverMode();
 	scheduleOnce(schedule_selector(MainMenu::sche_timeModeFlash),5);
@@ -642,11 +743,10 @@ void MainMenu::updateMusic(float dt){
 	}
 }
 void MainMenu::updateBackGround(){
-	int dif = Backgroundscrollspeed * AppDelegate::getScaleY() ;
-	background_1->setPositionY(background_1->getPositionY() - dif);
+	background_1->setPositionY(background_1->getPositionY() - backgroundscrollspeed);
 	background_2->setPositionY(
 			background_1->getPositionY()
-					+ background_1->boundingBox().size.height - dif);
+					+ background_1->boundingBox().size.height - backgroundscrollspeed);
 
 	if (background_2->getPositionY() <= 0) {
 		background_1->setPositionY(0);
@@ -666,12 +766,20 @@ void MainMenu::updatePositionCar(float dt){
 		}
 		if((car->getPositionY() + car->boundingBox().size.height/2 )<= (turtleCar->getPositionY() - turtleCar->boundingBox().size.height/2) && !car->pass){
 			car->pass = true;
-			score++;
+			score = score + 5;
 			CCSprite* sprite = scoreSprite;
 			scoreSprite = database->getNumberFont(score);
 			scoreGame->removeChild(sprite,true);
 			scoreGame->addChild(scoreSprite);
 			scoreSprite->setPosition(ccp(scoreGame->getContentSize().width/2, scoreGame->getContentSize().height/2));
+			if(score > 9){
+				scoreSprite->setPosition(ccp(0, scoreGame->getContentSize().height/2));
+				scoreSprite->setScale(0.8f);
+			}
+			else if(score >99){
+				scoreSprite->setPosition(ccp(0, scoreGame->getContentSize().height/2));
+				scoreSprite->setScale(0.5f);
+			}
 
 		}
 		if(car->getPositionY() <= -car->boundingBox().size.height/2){
@@ -872,6 +980,7 @@ void MainMenu::gameOver(){
 	unschedule(schedule_selector(MainMenu::updateTime));
 	unschedule(schedule_selector(MainMenu::carAppearanceRandom));
 	unschedule(schedule_selector(MainMenu::updateMusic));
+	unschedule(schedule_selector(MainMenu::showAdvertisementTop));
 	listCar->removeAllObjects();
 	startGame = false;
 	turtleCar->stopAllActions();
@@ -882,6 +991,7 @@ void MainMenu::gameOver(){
 		turtleCar->runAction(turtleCar->animateCrash);
 		turtleCar->runAction(CCSequence::create(colliCar(),CCCallFunc::create(this, callfunc_selector(MainMenu::tryAgain)), NULL));
 	}
+	scheduleOnce(schedule_selector(MainMenu::showAdvertisementCenter),1);
 }
 CCBezierTo* MainMenu::colliCar(){
 	ccBezierConfig bezier ;
@@ -921,6 +1031,7 @@ void MainMenu::tryAgain(){
 	scoreSprite->setPosition(ccp(scoreGame->getContentSize().width/2, scoreGame->getContentSize().height/2));
 }
 void MainMenu::initValueGame(){
+	backgroundscrollspeed = Backgroundscrollspeed * AppDelegate::getScaleY();
 	swipeMaxMomentum = SwipeMaxMomentum;
 	stepSperMomentum = StepSperMomentum;
 	moveChangesPerRandom = MoveChangesPerRandom;

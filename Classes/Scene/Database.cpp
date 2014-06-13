@@ -204,34 +204,34 @@ CCSprite* Database::getNumberFont(int number){
 		sprite_1->setDisplayFrame(
 				(CCSpriteFrame*) numberArr->objectAtIndex(number/10));
 		sprite->addChild(sprite_1);
-		sprite_1->setPosition(ccp(-40,sprite->getContentSize().height/2));
+		sprite_1->setPosition(ccp(sprite_1->getContentSize().width/2,sprite->getContentSize().height/2));
 
 		CCSprite* sprite_2 = CCSprite::create();
 		sprite_2->setDisplayFrame(
 				(CCSpriteFrame*) numberArr->objectAtIndex(number % 10));
 		sprite->addChild(sprite_2);
-		sprite_2->setPosition(ccp(sprite_2->getContentSize().width/2,sprite->getContentSize().height/2));
-		sprite->setScale(0.8f);
+		sprite_2->setPosition(ccp(sprite_1->getContentSize().width + sprite_2->getContentSize().width/2,sprite->getContentSize().height/2));
+//		sprite->setScale(0.8f);
 	}else if(number < 1000){
 		CCSprite* sprite_1 = CCSprite::create();
 		sprite_1->setDisplayFrame(
 				(CCSpriteFrame*) numberArr->objectAtIndex(number/100));
 		sprite->addChild(sprite_1);
-		sprite_1->setPosition(ccp(-60,sprite->getContentSize().height/2));
+		sprite_1->setPosition(ccp(sprite_1->getContentSize().width/2,sprite->getContentSize().height/2));
 
 		CCSprite* sprite_2 = CCSprite::create();
 		sprite_2->setDisplayFrame(
 				(CCSpriteFrame*) numberArr->objectAtIndex((number%100)/10));
 		sprite->addChild(sprite_2);
-		sprite_2->setPosition(ccp(sprite_2->getContentSize().width/2 - 20,sprite->getContentSize().height/2));
+		sprite_2->setPosition(ccp(sprite_1->getContentSize().width + sprite_2->getContentSize().width/2 ,sprite->getContentSize().height/2));
 
 		CCSprite* sprite_3 = CCSprite::create();
 		sprite_3->setDisplayFrame(
 				(CCSpriteFrame*) numberArr->objectAtIndex(number % 10));
 		sprite->addChild(sprite_3);
-		sprite_3->setPosition(ccp(sprite_3->getContentSize().width,sprite->getContentSize().height/2));
+		sprite_3->setPosition(ccp(sprite_1->getContentSize().width*2 + sprite_3->getContentSize().width,sprite->getContentSize().height/2));
 
-		sprite->setScale(0.5f);
+//		sprite->setScale(0.5f);
 	}
 	return sprite;
 }
