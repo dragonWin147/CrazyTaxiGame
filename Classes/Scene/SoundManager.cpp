@@ -54,6 +54,7 @@ const char * listSoundName[] = {
 
 		//GameOver
 		"FinalSound/TT_GameOver_Music.wav",
+		"FinalSound/TT_Score.wav",
 //		"Final Sound/TT_Button_Press.wav",
 
 		//-	Leaderboard

@@ -56,18 +56,19 @@ bool MainMenu::init() {
 	CCLog("MainMenu::init()");
 	database = new Database();
 	randomPosStar();
-
-	background_1 = CCSprite::create("FinalPNG/Country Background.png");
+	background_1 = CCSprite::create("FinalPNG/City_Background.png");
 	background_1->setAnchorPoint(ccp(0,0));
 	scaleNode(background_1);
 	background_1->setPosition(ccp(0,0));
 	this->addChild(background_1);
 
-	background_2 = CCSprite::create("FinalPNG/Country Background.png");
+	background_2 = CCSprite::create("FinalPNG/City_Background.png");
 	background_2->setAnchorPoint(ccp(0,0));
 	scaleNode(background_2);
 	background_2->setPosition(ccp(0,visibleSize.height));
 	this->addChild(background_2);
+
+	randomMapRes();
 
 	timeGame = CCSprite::create("FinalPNG/TT_Scorebadge.png");
 	scaleNode(timeGame);
@@ -79,6 +80,12 @@ bool MainMenu::init() {
 	timeSprite_1->setDisplayFrame(database->getNumberFont(0)->displayFrame());
 	timeGame->addChild(timeSprite_1);
 	timeSprite_1->setPosition(ccp(timeSprite_1->getContentSize().width/2,timeGame->getContentSize().height/2));
+
+
+	CCSprite *_cham = CCSprite::create();
+	_cham->setDisplayFrame(database->getKey(3));
+	timeSprite_1->addChild(_cham);
+	_cham->setPosition(ccp(timeSprite_1->getContentSize().width,0));
 
 	timeSprite_2 = CCSprite::create();
 	timeSprite_2->setDisplayFrame
@@ -131,7 +138,20 @@ bool MainMenu::init() {
 	timeStr->retain();
 	return true;
 }
+void MainMenu::randomMapRes(){
+	int randomMap = rand()%2;
+	const char * mapRes;
+	if(randomMap == 0)
+		mapRes = "FinalPNG/Country Background.png";
+	else
+		mapRes = "FinalPNG/City_Background.png";
 
+	background_1->setTexture(CCSprite::create(mapRes)->getTexture());
+	background_1->setTextureRect(CCSprite::create(mapRes)->getTextureRect());
+
+	background_2->setTexture(CCSprite::create(mapRes)->getTexture());
+	background_2->setTextureRect(CCSprite::create(mapRes)->getTextureRect());
+}
 void MainMenu::onEnter(){
 	CCLayer::onEnter();
 	SoundManager::gI()->playSoundBackground(TT_Title);
@@ -170,7 +190,7 @@ void MainMenu::initlayerControl() {
 
 	CCMenuItemImage* rateGame = CCMenuItemImage::create(
 			"FinalPNG/TT_RateButton_OFF.png", "FinalPNG/TT_RateButton_ON.png",
-			this, menu_selector(MainMenu::playGame));
+			this, menu_selector(MainMenu::ratingApp));
 	scaleNode(rateGame);
 	rateGame->setPosition(
 			ccp(visibleSize.width/2,startGame->getPositionY() + startGame->boundingBox().size.height));
@@ -183,7 +203,16 @@ void MainMenu::initlayerControl() {
 	leaderGame->setPosition(
 			ccp(visibleSize.width - leaderGame->boundingBox().size.width /2 - 50*AppDelegate::getScaleX() ,startGame->getPositionY()));
 
-	CCMenu* pMenu = CCMenu::create(startGame, leaderGame, NULL);
+
+	CCMenuItemImage* facebookLike = CCMenuItemImage::create(
+			"FinalPNG/Facebook.png",
+			"FinalPNG/Facebook.png", this,
+			menu_selector(MainMenu::likeFaceBook));
+	scaleNode(facebookLike);
+	facebookLike->setPosition(
+			ccp(visibleSize.width /5 ,rateGame->getPositionY()));
+
+	CCMenu* pMenu = CCMenu::create(rateGame,startGame, leaderGame,facebookLike, NULL);
 	pMenu->setPosition(CCPointZero);
 	controlGame->addChild(pMenu, 1);
 	this->addChild(controlGame);
@@ -244,7 +273,7 @@ void MainMenu::initLayerGameOver(){
 	scoreLabel->setPosition(
 			ccp(gameOverBk->getContentSize().width/2 , gameOverBk->getContentSize().height * 0.85));
 
-	CCSprite* timeLabel_1 = database->getNumberFont(time/100);
+	CCSprite* timeLabel_1 = database->getNumberFont(time/60);
 	timeLabel_1->setAnchorPoint(ccp(0,0.5));
 	gameOverBk->addChild(timeLabel_1);
 	timeLabel_1->setPosition(
@@ -257,7 +286,7 @@ void MainMenu::initLayerGameOver(){
 	_c->setPosition(
 			ccp(timeLabel_1->getPositionX() + timeLabel_1->getContentSize().width, timeLabel_1->getPositionY()));
 
-	CCSprite* timeLabel_2 = database->getNumberFont((time%100)/10);
+	CCSprite* timeLabel_2 = database->getNumberFont((time%60)/10);
 	timeLabel_2->setAnchorPoint(ccp(0,0.5));
 	gameOverBk->addChild(timeLabel_2);
 	timeLabel_2->setPosition(
@@ -289,20 +318,20 @@ void MainMenu::initLayerGameOver(){
 		almost->setAnchorPoint(ccp(0,0));
 		gameOverBk->addChild(almost);
 		almost->setPosition(
-				ccp(highScore->getPositionX(), highScore->getPositionY() + highScore->getContentSize().height/2));
+				ccp(highScore->getPositionX(), highScore->getPositionY() + 65));
 	}else if(score == scoreOfDay) {
 		CCSprite* equal = CCSprite::create("FinalPNG/TT_SameBadge.png");
 		equal->setAnchorPoint(ccp(0,0));
 		gameOverBk->addChild(equal);
 		equal->setPosition(
-				ccp(highScore->getPositionX(), highScore->getPositionY() + highScore->getContentSize().height/2));
+				ccp(highScore->getPositionX(), highScore->getPositionY() + 65));
 	}
 	else if (score > scoreOfDay) {
 		CCSprite* better = CCSprite::create("FinalPNG/TT_NewBadge.png");
 		better->setAnchorPoint(ccp(0,0));
 		gameOverBk->addChild(better);
 		better->setPosition(
-				ccp(highScore->getPositionX(), highScore->getPositionY() + highScore->getContentSize().height/2));
+				ccp(highScore->getPositionX(), highScore->getPositionY() + 65));
 
 		schedule(schedule_selector(MainMenu::starAnimation));
 	}
@@ -394,9 +423,14 @@ void MainMenu::postScoreTwitter(CCObject* obj){
 	SendMessageWithParams(string("postScoreTwitter"),dic);
 }
 
-void MainMenu::likeFaceBook(){
+void MainMenu::likeFaceBook(CCObject* obj){
 	SendMessageWithParams(string("likeFaceBook"), NULL);
 }
+
+void MainMenu::ratingApp(CCObject* obj){
+	SendMessageWithParams(string("ratingApp"), NULL);
+}
+
 
 void MainMenu::showAdvertisementTop(float dt){
 	if(time % 6 == 0 ){
@@ -687,9 +721,9 @@ void MainMenu::runGame() {
 	randomModeHover();
 }
 void MainMenu::updateTime(float dt){
-	time++;
-	timeSprite_1->setDisplayFrame(database->getNumberFont(time/100)->displayFrame());
-	timeSprite_2->setDisplayFrame(database->getNumberFont((time%100)/10)->displayFrame());
+	time = time++;
+	timeSprite_1->setDisplayFrame(database->getNumberFont(time/60)->displayFrame());
+	timeSprite_2->setDisplayFrame(database->getNumberFont((time%60)/10)->displayFrame());
 	timeSprite_3->setDisplayFrame(database->getNumberFont(time%10)->displayFrame());
 }
 void MainMenu::updateGame(float dt) {
@@ -705,6 +739,7 @@ void MainMenu::updateGame(float dt) {
 		updatePositionCar(1);
 		if(time == timeHover && !modeHover){
 			SoundManager::gI()->playSoundEffect(TT_Hover);
+			SimpleAudioEngine::sharedEngine()->setEffectsVolume(0.5f);
 			modeHover = true;
 			turtleCar->runActionHoverMode();
 			scheduleOnce(schedule_selector(MainMenu::sche_timeModeHover),10);
@@ -766,19 +801,20 @@ void MainMenu::updatePositionCar(float dt){
 		}
 		if((car->getPositionY() + car->boundingBox().size.height/2 )<= (turtleCar->getPositionY() - turtleCar->boundingBox().size.height/2) && !car->pass){
 			car->pass = true;
-			score = score + 5;
+			score = score++;
+			SoundManager::gI()->playSoundEffect(TT_Score);
 			CCSprite* sprite = scoreSprite;
 			scoreSprite = database->getNumberFont(score);
 			scoreGame->removeChild(sprite,true);
 			scoreGame->addChild(scoreSprite);
 			scoreSprite->setPosition(ccp(scoreGame->getContentSize().width/2, scoreGame->getContentSize().height/2));
 			if(score > 9){
-				scoreSprite->setPosition(ccp(0, scoreGame->getContentSize().height/2));
 				scoreSprite->setScale(0.8f);
+				scoreSprite->setPosition(ccp(scoreGame->getContentSize().width/6, scoreGame->getContentSize().height/2));
 			}
 			else if(score >99){
-				scoreSprite->setPosition(ccp(0, scoreGame->getContentSize().height/2));
 				scoreSprite->setScale(0.5f);
+				scoreSprite->setPosition(ccp(0, scoreGame->getContentSize().height/2));
 			}
 
 		}
@@ -790,45 +826,47 @@ void MainMenu::updatePositionCar(float dt){
 }
 
 void MainMenu::updatePosTurtle(){
-	if(!modeHover){
-		if (momentums < 0 && !leftMoving) {
-			turtleCar->stopAllActions();
-			leftMoving = true;
-			rightMoving = false;
-			turtleCar->runActionLeft();
-		} else if (momentums > 0 && !rightMoving) {
-			turtleCar->stopAllActions();
-			rightMoving = true;
-			leftMoving = false;
-			turtleCar->runActionRight();
-		} else if (momentums == 0) {
-			if (leftMoving)
-				turtleCar->stopActionLeft();
-			if (rightMoving)
-				turtleCar->stopActionRight();
-			if (leftMoving || rightMoving)
-				turtleCar->runActionForward();
-			leftMoving = false;
-			rightMoving = false;
-		}
-		// random momentums
-		if (numberMovements > 0
-				&& (numberMovements % moveChangesPerRandom == 0) && !randomMomentums) {
-			randomMomentums = true;
-			int ran = rand() % 3;
-			if (ran == 0) {
-				stepSperMomentum = stepSperMomentum * swipePerMomentumRandom_1;
-			} else if (ran == 1) {
-				stepSperMomentum = stepSperMomentum * swipePerMomentumRandom_2;
-			} else if (ran == 2) {
-				stepSperMomentum = stepSperMomentum * swipePerMomentumRandom_3;
-			}
-			scheduleOnce(schedule_selector(MainMenu::timerRandomMomentums),5);
-		}
-		turtleCar->setPositionX(
-				turtleCar->getPositionX()
-						+ momentums * distance * stepSperMomentum /30);
+//	if(!modeHover){
+	if (momentums < 0 && !leftMoving) {
+		turtleCar->stopActionRight();
+		turtleCar->stopActionForward();
+		leftMoving = true;
+		rightMoving = false;
+		turtleCar->runActionLeft();
+	} else if (momentums > 0 && !rightMoving) {
+		turtleCar->stopActionLeft();
+		turtleCar->stopActionForward();
+		rightMoving = true;
+		leftMoving = false;
+		turtleCar->runActionRight();
+	} else if (momentums == 0) {
+		if (leftMoving)
+			turtleCar->stopActionLeft();
+		if (rightMoving)
+			turtleCar->stopActionRight();
+		if (leftMoving || rightMoving)
+			turtleCar->runActionForward();
+		leftMoving = false;
+		rightMoving = false;
 	}
+	// random momentums
+	if (numberMovements > 0 && (numberMovements % moveChangesPerRandom == 0)
+			&& !randomMomentums) {
+		randomMomentums = true;
+		int ran = rand() % 3;
+		if (ran == 0) {
+			stepSperMomentum = stepSperMomentum * swipePerMomentumRandom_1;
+		} else if (ran == 1) {
+			stepSperMomentum = stepSperMomentum * swipePerMomentumRandom_2;
+		} else if (ran == 2) {
+			stepSperMomentum = stepSperMomentum * swipePerMomentumRandom_3;
+		}
+		scheduleOnce(schedule_selector(MainMenu::timerRandomMomentums), 5);
+	}
+	turtleCar->setPositionX(
+			turtleCar->getPositionX()
+					+ momentums * distance * stepSperMomentum / 30);
+//	}
 }
 void MainMenu::timerRandomMomentums(float dt){
 	stepSperMomentum = StepSperMomentum;
@@ -850,6 +888,7 @@ void MainMenu::randomModeHover(){
 }
 
 void MainMenu::playGame(CCObject *obj) {
+	randomMapRes();
 	SoundManager::gI()->playSoundEffect(TT_Button_Press);
 	initValueGame();
 	turtleCar->setVisible(false);
@@ -1132,7 +1171,7 @@ void MainMenu::xtSwipeGesture(XTTouchDirection direction, float distance,
 		break;
 	case XTLayer::LEFT:
 		directionStr = "LEFT";
-		if (turtleCar != NULL && startGame && !modeHover) {
+		if (turtleCar != NULL && startGame ) {
 			SoundManager::gI()->playSoundEffect(TT_SwipeRight);
 			momentums++;
 			numberMovements++;
@@ -1140,7 +1179,7 @@ void MainMenu::xtSwipeGesture(XTTouchDirection direction, float distance,
 		break;
 	case XTLayer::RIGHT:
 		directionStr = "RIGHT";
-		if (turtleCar != NULL && startGame && !modeHover) {
+		if (turtleCar != NULL && startGame) {
 			SoundManager::gI()->playSoundEffect(TT_SwipeLeft);
 			momentums--;
 			numberMovements++;

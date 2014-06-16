@@ -177,10 +177,16 @@ CCSprite* Database::drawScore(const char * str){
 		sprite_7->setAnchorPoint(ccp(0,0.5f));
 		sprite_8->setAnchorPoint(ccp(0,0.5f));
 		sprite_9->setAnchorPoint(ccp(0,0.5f));
-
+		int offset = 0;
+		if(_score < 10)
+			offset = 1;
+		else if(_score < 100)
+			offset = 2;
+		else
+			offset = 3;
 		sprite_1->setPosition(ccp(0,sprite->getContentSize().height/2));
-		sprite_2->setPosition(ccp(sprite_1->getContentSize().width*2,sprite->getContentSize().height/2));
-		sprite_3->setPosition(ccp(sprite_2->getPositionX() + sprite_2->getContentSize().width,sprite->getContentSize().height/2));
+		sprite_2->setPosition(ccp(offset * 90,sprite->getContentSize().height/2));
+		sprite_3->setPosition(ccp(sprite_2->getPositionX() + 2 * 90,sprite->getContentSize().height/2));
 		sprite_4->setPosition(ccp(sprite_3->getPositionX() + sprite_3->getContentSize().width,sprite->getContentSize().height/2));
 		sprite_5->setPosition(ccp(sprite_4->getPositionX() + sprite_4->getContentSize().width,sprite->getContentSize().height/2));
 		sprite_6->setPosition(ccp(sprite_5->getPositionX() + sprite_5->getContentSize().width,sprite->getContentSize().height/2));
@@ -197,8 +203,9 @@ CCSprite* Database::drawScore(const char * str){
 CCSprite* Database::getNumberFont(int number){
 	CCSprite* sprite = CCSprite::create();
 	sprite->retain();
-	if(number < 10)
+	if(number < 10){
 		sprite->setDisplayFrame((CCSpriteFrame*)numberArr->objectAtIndex(number));
+	}
 	else if(number < 100){
 		CCSprite* sprite_1 = CCSprite::create();
 		sprite_1->setDisplayFrame(
@@ -210,7 +217,7 @@ CCSprite* Database::getNumberFont(int number){
 		sprite_2->setDisplayFrame(
 				(CCSpriteFrame*) numberArr->objectAtIndex(number % 10));
 		sprite->addChild(sprite_2);
-		sprite_2->setPosition(ccp(sprite_1->getContentSize().width + sprite_2->getContentSize().width/2,sprite->getContentSize().height/2));
+		sprite_2->setPosition(ccp(sprite_1->getContentSize().width/2 + sprite_2->getContentSize().width/2 + 10,sprite->getContentSize().height/2));
 //		sprite->setScale(0.8f);
 	}else if(number < 1000){
 		CCSprite* sprite_1 = CCSprite::create();
@@ -223,13 +230,13 @@ CCSprite* Database::getNumberFont(int number){
 		sprite_2->setDisplayFrame(
 				(CCSpriteFrame*) numberArr->objectAtIndex((number%100)/10));
 		sprite->addChild(sprite_2);
-		sprite_2->setPosition(ccp(sprite_1->getContentSize().width + sprite_2->getContentSize().width/2 ,sprite->getContentSize().height/2));
+		sprite_2->setPosition(ccp(sprite_1->getContentSize().width/2 + sprite_2->getContentSize().width/2 + 10,sprite->getContentSize().height/2));
 
 		CCSprite* sprite_3 = CCSprite::create();
 		sprite_3->setDisplayFrame(
 				(CCSpriteFrame*) numberArr->objectAtIndex(number % 10));
 		sprite->addChild(sprite_3);
-		sprite_3->setPosition(ccp(sprite_1->getContentSize().width*2 + sprite_3->getContentSize().width,sprite->getContentSize().height/2));
+		sprite_3->setPosition(ccp(sprite_2->getContentSize().width + sprite_3->getContentSize().width/2 + 25,sprite->getContentSize().height/2));
 
 //		sprite->setScale(0.5f);
 	}

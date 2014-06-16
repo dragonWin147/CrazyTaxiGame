@@ -86,6 +86,7 @@ public:
 	void menuCloseCallback(CCObject* pSender);
 	void initlayerControl();
 	void initLayerReady();
+	void randomMapRes();
 	void initLayerGameOver();
 	void leaderGame(CCObject* obj);
 	void sceneReady();
@@ -121,7 +122,8 @@ public:
 	void postScoreFaceBookSuccess();
 	void postScoreTwitter(CCObject* obj);
 	void postScoreTwitterSuccess();
-	void likeFaceBook();
+	void likeFaceBook(CCObject* obj);
+	void ratingApp(CCObject* obj);
 	void likeFaceBookSuccess();
 	void showAdvertisementTop(float dt);
 	void showAdvertisementCenter(float dt);

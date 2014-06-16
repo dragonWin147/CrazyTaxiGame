@@ -42,7 +42,7 @@ enum eTypeSound {
 	//GameOver
 	TT_GameOver_Music,
 //	TT_Button_Press,
-
+	TT_Score,
 	//-	Leaderboard
 //	TT_GameOver_Music,
 //	TT_Button_Press,

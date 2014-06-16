@@ -18,6 +18,6 @@
 #define MiniReleaseCarTime 1
 #define CarSpeed 2
 #define TruckSpeed 2
-#define Hovertimemultiplier 10
+#define Hovertimemultiplier 2
 #define Backgroundscrollspeed 30
 #endif /* RESOURSES_H_ */
