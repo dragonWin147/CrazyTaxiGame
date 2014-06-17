@@ -58,6 +58,15 @@ void Database::initTextureRes(){
 	CCSprite::create("TurtleCrash/Turtle Animation 1_Crash7.png");
 	CCSprite::create("TurtleCrash/Turtle Animation 1_Crash8.png");
 
+	CCSprite::create("TurtleHover/Turtle Animation 1_Hover1.png");
+	CCSprite::create("TurtleHover/Turtle Animation 1_Hover2.png");
+	CCSprite::create("TurtleHover/Turtle Animation 1_Hover3.png");
+	CCSprite::create("TurtleHover/Turtle Animation 1_Hover4.png");
+	CCSprite::create("TurtleHover/Turtle Animation 1_Hover5.png");
+	CCSprite::create("TurtleHover/Turtle Animation 1_Hover6.png");
+	CCSprite::create("TurtleHover/Turtle Animation 1_Hover7.png");
+	CCSprite::create("TurtleHover/Turtle Animation 1_Hover8.png");
+
 	//Blue Car
 	CCSprite::create("BlueCarNormal/Blue Care Normal1.png");
 	CCSprite::create("BlueCarNormal/Blue Care Normal2.png");
@@ -97,6 +106,16 @@ void Database::initTextureRes(){
 	CCSprite::create("OrangeCarScore/Orange Car_Score3.png");
 	CCSprite::create("OrangeCarScore/Orange Car_Score4.png");
 
+	CCSprite::create("FinalPNG/City_Background.png");
+	CCSprite::create("FinalPNG/Country Background.png");
+	CCSprite::create("FinalPNG/TT_LeaderBoard.png");
+	CCSprite::create("FinalPNG/TT_GameOverScoreBackground.png");
+	CCSprite::create("FinalPNG/TT_LeaderTitle.png");
+	CCSprite::create("FinalPNG/TT_GameOverTitle.png");
+	CCSprite::create("FinalPNG/TT_Ready_1.png");
+	CCSprite::create("FinalPNG/TT_Ready_2.png");
+	CCSprite::create("FinalPNG/TT_Ready_3.png");
+	CCSprite::create("FinalPNG/TT_Ready_4GO.png");
 }
 void Database::saveData(int score){
 	CCDate* date = new CCDate();
@@ -177,15 +196,9 @@ CCSprite* Database::drawScore(const char * str){
 		sprite_7->setAnchorPoint(ccp(0,0.5f));
 		sprite_8->setAnchorPoint(ccp(0,0.5f));
 		sprite_9->setAnchorPoint(ccp(0,0.5f));
-		int offset = 0;
-		if(_score < 10)
-			offset = 1;
-		else if(_score < 100)
-			offset = 2;
-		else
-			offset = 3;
+
 		sprite_1->setPosition(ccp(0,sprite->getContentSize().height/2));
-		sprite_2->setPosition(ccp(offset * 90,sprite->getContentSize().height/2));
+		sprite_2->setPosition(ccp(3 * 90,sprite->getContentSize().height/2));
 		sprite_3->setPosition(ccp(sprite_2->getPositionX() + 2 * 90,sprite->getContentSize().height/2));
 		sprite_4->setPosition(ccp(sprite_3->getPositionX() + sprite_3->getContentSize().width,sprite->getContentSize().height/2));
 		sprite_5->setPosition(ccp(sprite_4->getPositionX() + sprite_4->getContentSize().width,sprite->getContentSize().height/2));

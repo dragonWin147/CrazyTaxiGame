@@ -130,6 +130,7 @@ public:
 	void hideAds(float dt);
 	void showAdsSuccess();
 	void hideAdsSuccess();
+	void delayStarAniamation(float dt);
 	CCBezierTo *colliCar();
 	void carAppearanceRandom(float dt);
 	void updatePositionCar(float dt);

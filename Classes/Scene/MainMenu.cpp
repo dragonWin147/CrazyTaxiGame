@@ -255,10 +255,17 @@ void MainMenu::initLayerReady() {
 void MainMenu::initLayerGameOver(){
 	layerGameOver = CCLayer::create();
 	layerGameOver->retain();
+
+	CCSprite* titleSmall = CCSprite::create("FinalPNG/TT_Title_SMALL.png");
+	scaleNode(titleSmall);
+	titleSmall->setPosition(
+			ccp(visibleSize.width/2,visibleSize.height - titleSmall->boundingBox().size.height/2 - 20 *AppDelegate::getScaleY()));
+	layerGameOver->addChild(titleSmall);
+
 	titleGameOver = CCSprite::create("FinalPNG/TT_GameOverTitle.png");
 	scaleNode(titleGameOver);
 	titleGameOver->setPosition(
-			ccp(visibleSize.width/2,visibleSize.height - titleGameOver->boundingBox().size.height/2 - 100*AppDelegate::getScaleY()));
+			ccp(visibleSize.width/2,visibleSize.height - titleGameOver->boundingBox().size.height/2 - 200*AppDelegate::getScaleY()));
 	layerGameOver->addChild(titleGameOver);
 
 	gameOverBk = CCSprite::create("FinalPNG/TT_GameOverScoreBackground.png");
@@ -333,6 +340,10 @@ void MainMenu::initLayerGameOver(){
 		better->setPosition(
 				ccp(highScore->getPositionX(), highScore->getPositionY() + 65));
 
+		if(layerStar == NULL){
+			layerStar = CCLayer::create();
+			layerStar->retain();
+		}
 		schedule(schedule_selector(MainMenu::starAnimation));
 	}
 	//------------------------------------------
@@ -372,6 +383,8 @@ void MainMenu::leaderGame(CCObject* obj){
 	if(layerStar){
 		CCLOG("layerStar false");
 		layerStar->removeAllChildrenWithCleanup(true);
+		layerStar->release();
+		layerStar = NULL;
 	}
 	titleGameOver->setTexture(CCSprite::create("FinalPNG/TT_LeaderTitle.png")->getTexture());
 	titleGameOver->setTextureRect(CCSprite::create("FinalPNG/TT_LeaderTitle.png")->getTextureRect());
@@ -569,8 +582,10 @@ void MainMenu::randomPosStar(){
 }
 void MainMenu::starAnimation(float dt){
 	if(posStarCount >= 14){
+		posStarCount = 0;
 		unschedule(schedule_selector(MainMenu::starAnimation));
 		randomPosStar();
+		scheduleOnce(schedule_selector(MainMenu::delayStarAniamation),2);
 	}
 	CCSprite *star = CCSprite::create("FinalPNG/star.png");
 	int begin_X = x_star[posStarCount];
@@ -582,6 +597,13 @@ void MainMenu::starAnimation(float dt){
     CCActionInterval* move_ease = CCEaseBackInOut::create((CCActionInterval*)(move->copy()->autorelease()) );
 	star->runAction(move_ease);
 	posStarCount ++;
+}
+
+void MainMenu::delayStarAniamation(float dt){
+	if(layerStar){
+		layerStar->removeAllChildrenWithCleanup(true);
+		schedule(schedule_selector(MainMenu::starAnimation));
+	}
 }
 
 void MainMenu::carAppearanceRandom(float dt){
@@ -904,6 +926,7 @@ void MainMenu::playGame(CCObject *obj) {
 		layerGameOver = NULL;
 //		layerGameOver->setVisible(false);
 	}
+
 }
 
 void MainMenu::sceneReady() {
@@ -1022,7 +1045,10 @@ void MainMenu::gameOver(){
 	unschedule(schedule_selector(MainMenu::showAdvertisementTop));
 	listCar->removeAllObjects();
 	startGame = false;
-	turtleCar->stopAllActions();
+	turtleCar->stopActionForward();
+	turtleCar->stopActionLeft();
+	turtleCar->stopActionRight();
+	turtleCar->stopActionHoverMode();
 	turtleCar->createActionCrash();
 	if(colliLeftSide||colliRightSide)
 		handleColliSide();
