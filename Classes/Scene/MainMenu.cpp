@@ -344,9 +344,16 @@ void MainMenu::initLayerGameOver(){
 			layerStar = CCLayer::create();
 			layerStar->retain();
 		}
-		schedule(schedule_selector(MainMenu::starAnimation));
+		schedule(schedule_selector(MainMenu::starAnimation),0.1);
 	}
 	//------------------------------------------
+	CCMenuItemImage* rateGame = CCMenuItemImage::create(
+			"FinalPNG/TT_RateButton_OFF.png", "FinalPNG/TT_RateButton_ON.png",
+			this, menu_selector(MainMenu::ratingApp));
+	scaleNode(rateGame);
+	rateGame->setPosition(
+			ccp(visibleSize.width/2,rateGame->boundingBox().size.height/2));
+
 	CCMenuItemImage* startGame = CCMenuItemImage::create(
 			"FinalPNG/TT_StartButton_OFF.png", "FinalPNG/TT_StartButton_ON.png",
 			this, menu_selector(MainMenu::playGame));
@@ -362,7 +369,8 @@ void MainMenu::initLayerGameOver(){
 	leaderGameButton->setPosition(
 			ccp(visibleSize.width - leaderGameButton->boundingBox().size.width /2 - 50*AppDelegate::getScaleX() ,startGame->getPositionY()));
 
-	CCMenu* pMenu = CCMenu::create(startGame, leaderGameButton, NULL);
+	CCMenu* pMenu = CCMenu::create(startGame, leaderGameButton,rateGame
+			, NULL);
 	pMenu->setPosition(CCPointZero);
 	layerGameOver->addChild(pMenu, 1);
 	this->addChild(layerGameOver);
@@ -381,7 +389,7 @@ void MainMenu::leaderGame(CCObject* obj){
 	}
 
 	if(layerStar){
-		CCLOG("layerStar false");
+		unschedule(schedule_selector(MainMenu::starAnimation));
 		layerStar->removeAllChildrenWithCleanup(true);
 		layerStar->release();
 		layerStar = NULL;
@@ -581,23 +589,35 @@ void MainMenu::randomPosStar(){
 	}
 }
 void MainMenu::starAnimation(float dt){
-	if(posStarCount >= 14){
-		posStarCount = 0;
-		unschedule(schedule_selector(MainMenu::starAnimation));
-		randomPosStar();
-		scheduleOnce(schedule_selector(MainMenu::delayStarAniamation),2);
-	}
+//	if(posStarCount >= 14){
+//		posStarCount = 0;
+//		unschedule(schedule_selector(MainMenu::starAnimation));
+//		randomPosStar();
+////		scheduleOnce(schedule_selector(MainMenu::delayStarAniamation),2);
+//	}
 	CCSprite *star = CCSprite::create("FinalPNG/star.png");
 	int begin_X = x_star[posStarCount];
 	int end_Y = y_star[posStarCount];
 	star->setScale(AppDelegate::getMinScale());
-	star->setPosition(ccp(begin_X,visibleSize.height + star->boundingBox().size.width));
+	star->setPosition(ccp(arc4random()%(int)visibleSize.width,visibleSize.height + star->boundingBox().size.width));
 	layerStar->addChild(star);
-	CCMoveTo* move = CCMoveTo::create(2,ccp(star->getPositionX(), end_Y));
-    CCActionInterval* move_ease = CCEaseBackInOut::create((CCActionInterval*)(move->copy()->autorelease()) );
-	star->runAction(move_ease);
+	CCMoveTo* move = CCMoveTo::create(2,ccp(star->getPositionX(), - star->boundingBox().size.height));
+//    CCActionInterval* move_ease = CCEaseBackInOut::create((CCActionInterval*)(move->copy()->autorelease()) );
+	CCSequence *seqMove = CCSequence::create(move,
+			CCCallFuncND::create(this,
+					callfuncND_selector(MainMenu::starMoveFinished), star),
+			NULL);
+	star->runAction(seqMove);
 	posStarCount ++;
 }
+
+void MainMenu::starMoveFinished(CCNode* sender, void * d) {
+	CCSprite *star = (CCSprite *) d;
+	if (star!= NULL) {
+		layerStar->removeChild(star, true);
+	}
+}
+
 
 void MainMenu::delayStarAniamation(float dt){
 	if(layerStar){
@@ -743,7 +763,7 @@ void MainMenu::runGame() {
 	randomModeHover();
 }
 void MainMenu::updateTime(float dt){
-	time = time++;
+	time++;
 	timeSprite_1->setDisplayFrame(database->getNumberFont(time/60)->displayFrame());
 	timeSprite_2->setDisplayFrame(database->getNumberFont((time%60)/10)->displayFrame());
 	timeSprite_3->setDisplayFrame(database->getNumberFont(time%10)->displayFrame());
@@ -823,7 +843,7 @@ void MainMenu::updatePositionCar(float dt){
 		}
 		if((car->getPositionY() + car->boundingBox().size.height/2 )<= (turtleCar->getPositionY() - turtleCar->boundingBox().size.height/2) && !car->pass){
 			car->pass = true;
-			score = score++;
+			score++;
 			SoundManager::gI()->playSoundEffect(TT_Score);
 			CCSprite* sprite = scoreSprite;
 			scoreSprite = database->getNumberFont(score);
@@ -910,6 +930,7 @@ void MainMenu::randomModeHover(){
 }
 
 void MainMenu::playGame(CCObject *obj) {
+	unschedule(schedule_selector(MainMenu::starAnimation));
 	randomMapRes();
 	SoundManager::gI()->playSoundEffect(TT_Button_Press);
 	initValueGame();

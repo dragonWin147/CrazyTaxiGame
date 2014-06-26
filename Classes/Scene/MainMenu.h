@@ -110,6 +110,7 @@ public:
 	void handleColliSide();
 	void updateScore();
 	void updateTime(float dt);
+	void starMoveFinished(CCNode* sender, void * d);
 	void setLaneCar();
 	void randomModeHover();
 	void saveData(int score);
